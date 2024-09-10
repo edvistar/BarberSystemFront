@@ -1,0 +1,28 @@
+<!-- <form>
+  <mat-card>
+    <h1 class="m-3 text-center"><span>Agregar servicios al cliente</span></h1>
+    <h2 class="m-3 text-center"><span>Silla Nº: {{ chairId }}</span></h2>
+    <mat-card-content>
+      <mat-form-field appearance="fill">
+        <mat-label>Selecciona una opción</mat-label>
+        <mat-select [(ngModel)]="selectedValue" name="servicio">
+          <mat-option *ngFor="let option of options" [value]="option.value">
+            {{ option.viewValue }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+      <button mat-raised-button color="primary" (click)="agregarServicio()">Agregar Servicio</button>
+    </mat-card-content>
+  </mat-card>
+</form>
+
+<div *ngIf="selectedServices.length > 0">
+  <h3>Servicios seleccionados:</h3>
+  <ul>
+    <li *ngFor="let service of selectedServices">
+      {{ service.viewValue }} - ${{ service.precio }}
+    </li>
+  </ul>
+</div> -->
+
+
