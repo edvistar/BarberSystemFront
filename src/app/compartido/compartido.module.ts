@@ -5,9 +5,8 @@ import {HttpClientModule} from '@angular/common/http';
 import { LayoutComponent } from './layout/layout.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { MaterialModule } from '../material/material.module';
-import { AppRoutingModule } from '../app-routing.module';
 import { LayoutRoutingModule } from './layout-routing.module';
-import {MatCardModule} from '@angular/material/card';
+import {MatDialogModule} from '@angular/material/dialog';
 
 
 @NgModule({
@@ -21,7 +20,7 @@ import {MatCardModule} from '@angular/material/card';
     LayoutRoutingModule
   ], exports:[
     ReactiveFormsModule, FormsModule, HttpClientModule,
-    LayoutComponent, DashboardComponent
+    LayoutComponent, DashboardComponent, MatDialogModule
   ]
 })
 export class CompartidoModule { }

@@ -1,58 +1,60 @@
 import { Component, Inject, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { ChairService } from '../../services/chair.service';
-import { Chair } from '../../interfaces/chair';
+import { ServiciosService } from '../../services/servicios.service';
+import { Servicios } from '../../interfaces/servicios';
 import { CompartidoService } from 'src/app/compartido/compartido.service';
+
+
 
 @Component({
   selector: 'app-modal',
-  templateUrl: './modal.component.html',
-  styleUrls: ['./modal.component.css']
+  templateUrl: './modal-servicio.component.html',
+  styleUrls: ['./modal-servicio.component.css']
 })
-export class ModalComponent implements OnInit {
-  formChair: FormGroup;
+export class ModalServicioComponent implements OnInit {
+  formServicio: FormGroup;
   titulo: string = "Agregar";
   nombreBoton: string = "Guardar";
 
-  constructor(private modal: MatDialogRef<ModalComponent>,
-              @Inject(MAT_DIALOG_DATA) public datosChair: Chair,
+  constructor(private modal: MatDialogRef<ModalServicioComponent>,
+              @Inject(MAT_DIALOG_DATA) public datosServicio: Servicios,
               private fb: FormBuilder,
-              private _chairServicio: ChairService,
+              private _serviceServicio: ServiciosService,
               private _compartidoServicio: CompartidoService){
 
-    this.formChair = this.fb.group({
+    this.formServicio = this.fb.group({
       name: ['', Validators.required],
-      numero: ['', Validators.required],
-      logo: ['', Validators.required]
+      description: ['', Validators.required],
+      price: ['', Validators.required]
     });
-    if(this.datosChair != null){
+    if(this.datosServicio != null){
       this.titulo = 'Editar';
       this.nombreBoton = 'Actualizar'
     }
   }
   ngOnInit(): void {
-    if(this.datosChair != null)
+    if(this.datosServicio != null)
     {
-      this.formChair.patchValue({
-        name: this.datosChair.name,
-        numero: this.datosChair.numero,
-        logo: this.datosChair.logo
+      this.formServicio.patchValue({
+        name: this.datosServicio.name,
+        description: this.datosServicio.description,
+        price: this.datosServicio.price
       })
     }
   }
 
-  crearModificarChair(){
-    const chair: Chair = {
-      id: this.datosChair == null ? 0 : this.datosChair.id,
-      name: this.formChair.value.name,
-      numero: this.formChair.value.numero,
-      logo: this.formChair.value.logo
+  crearModificarServicio(){
+    const servicio: Servicios = {
+      id: this.datosServicio == null ? 0 : this.datosServicio.id,
+      name: this.formServicio.value.name,
+      description: this.formServicio.value.description,
+      price: this.formServicio.value.price
     }
-    if(this.datosChair == null)
+    if(this.datosServicio == null)
     {
         //Crear nueva Especiali
-        this._chairServicio.crear(chair).subscribe({
+        this._serviceServicio.crear(servicio).subscribe({
           next: (data) =>{
             if(data.isExitoso)
             {
@@ -72,16 +74,16 @@ export class ModalComponent implements OnInit {
     else
     {
       //Editar
-      this._chairServicio.editar(chair).subscribe({
+      this._serviceServicio.editar(servicio).subscribe({
         next: (data) =>{
           if(data.isExitoso)
           {
-            this._compartidoServicio.mostrarAlerta('La Especialidad ha sido Actualizada con Exito!',
+            this._compartidoServicio.mostrarAlerta('El servicio ha sido Actualizado con Exito!',
                                                   'Completo');
             this.modal.close("true");
           }
           else
-            this._compartidoServicio.mostrarAlerta('No se pudo Actualizar la especialidad',
+            this._compartidoServicio.mostrarAlerta('No se pudo Actualizar el servicio',
                                       'Error!');
 
         },

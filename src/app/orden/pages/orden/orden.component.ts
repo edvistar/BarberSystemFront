@@ -4,7 +4,7 @@ import { ChairService } from '../../../chair/services/chair.service';
 import { ServiciosService } from '../../../servicios/services/servicios.service';
 import { CompartidoService } from '../../../compartido/compartido.service';
 import { Chair } from '../../../chair/interfaces/chair';
-import { Servicios } from '../../../Interfaces/servicios';
+import { Servicios } from '../../../servicios/interfaces/servicios';
 
 @Component({
   selector: 'app-orden',

@@ -1,58 +1,57 @@
 import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
-import { ChairService } from '../../services/chair.service';
-import { ServiciosService } from '../../../servicios/services/servicios.service';
+import { ServiciosService } from '../../services/servicios.service';
 import { CompartidoService } from '../../../compartido/compartido.service';
-import { Chair } from '../../interfaces/chair';
-import { ModalChairComponent } from '../modal/modal-chair.component';
+import { Servicios } from '../../interfaces/servicios';
+import { ModalServicioComponent } from '../modal/modal-servicio.component';
 import { MatDialog } from '@angular/material/dialog';
 import Swal from 'sweetalert2';
 
 @Component({
-  selector: 'app-chair',
-  templateUrl: './chair.component.html',
-  styleUrls: ['./chair.component.css']
+  selector: 'app-servicios',
+  templateUrl: './servicios.component.html',
+  styleUrls: ['./servicios.component.css']
 })
-export class ChairComponent implements OnInit, AfterViewInit {
+export class ServiciosComponent {
   displayedColumns: string [] = [
     'name',
-    'numero',
-    'logo',
+    'description',
+    'price',
     'acciones'
   ];
 
-  dataInicial: Chair []= [];
+  dataInicial: ServiciosService []= [];
   dataSource = new MatTableDataSource(this.dataInicial);
   @ViewChild(MatPaginator) paginacionTabla!: MatPaginator;
 
 
   constructor(
-    private _chairServicio: ChairService,
+    private _serviceServicio: ServiciosService,
     private _servicioServicio: ServiciosService,
     private _compartidoService: CompartidoService,
     private dialog: MatDialog ) {}
 
-  nuevoChair(){
+  nuevoServicio(){
     this.dialog
-        .open(ModalChairComponent, {disableClose: true, width: '400px'})
+        .open(ModalServicioComponent, {disableClose: true, width: '400px'})
         .afterClosed()
         .subscribe((resultado)=> {
-          if(resultado === 'true') this.obtenerChairs();
+          if(resultado === 'true') this.obtenerServicios();
         })
   }
 
-  editarChair(chair: Chair){
+  editarServicio(servicio: Servicios){
     this.dialog
-    .open(ModalChairComponent, {disableClose: true, width: '400px', data: chair})
+    .open(ModalServicioComponent, {disableClose: true, width: '400px', data: servicio})
     .afterClosed()
     .subscribe((resultado)=> {
-      if(resultado === 'true') this.obtenerChairs();
+      if(resultado === 'true') this.obtenerServicios();
     })
   }
 
-  obtenerChairs(){
-    this._chairServicio.lista().subscribe({
+  obtenerServicios(){
+    this._serviceServicio.lista().subscribe({
       next: (data) => {
           if(data.isExitoso)
           {
@@ -68,11 +67,11 @@ export class ChairComponent implements OnInit, AfterViewInit {
     });
   }
 
-  removerChair(chair: Chair){
+  removerServicio(servicio: Servicios){
 
     Swal.fire({
      title: 'Desea eliminar la especialidad',
-     text: chair.name,
+     text: servicio.name,
      icon: 'warning',
      confirmButtonColor: '#3085d6',
      confirmButtonText: 'Si, Eliminar',
@@ -81,11 +80,11 @@ export class ChairComponent implements OnInit, AfterViewInit {
      cancelButtonText: 'No'
     }).then((resultado)=> {
       if(resultado.isConfirmed){
-        this._chairServicio.eliminar(chair.id).subscribe({
+        this._serviceServicio.eliminar(servicio.id).subscribe({
             next: (data) =>{
               if(data.isExitoso){
                 this._compartidoService.mostrarAlerta('La especialidad fue eliminada', 'Completo');
-                this.obtenerChairs();
+                this.obtenerServicios();
               }
               else{
                 this._compartidoService.mostrarAlerta('No se pudo eliminar la especialidad', 'Error!');
@@ -106,7 +105,7 @@ export class ChairComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {
-    this.obtenerChairs();
+    this.obtenerServicios();
   }
 
   ngAfterViewInit(): void {

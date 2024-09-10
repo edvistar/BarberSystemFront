@@ -1,6 +1,5 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import {HttpClientModule} from '@angular/common/http';
@@ -10,11 +9,13 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { UsuarioModule } from './usuario/usuario.module';
 import { MaterialModule } from './material/material.module';
 import { FormsModule } from '@angular/forms';
-import { ServiciosComponent } from './servicios/servicios.component';
+import { ServiciosComponent } from './servicios/pages/servicios/servicios.component';
 import { OrdenComponent } from './orden/pages/orden/orden.component';
-import { ModalComponent } from './chair/pages/modal/modal.component';
+import { ModalChairComponent } from './chair/pages/modal/modal-chair.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { SweetAlert2Module } from '@sweetalert2/ngx-sweetalert2';
+import { ModalServicioComponent } from './servicios/pages/modal/modal-servicio.component';
+
 
 @NgModule({
   declarations: [
@@ -23,7 +24,8 @@ import { SweetAlert2Module } from '@sweetalert2/ngx-sweetalert2';
     NegocioComponent,
     ServiciosComponent,
     OrdenComponent,
-    ModalComponent
+    ModalChairComponent,
+    ModalServicioComponent
   ],
   imports: [
     BrowserModule,
