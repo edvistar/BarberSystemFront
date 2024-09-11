@@ -3,9 +3,11 @@
 }
  .colorbar{
   border-radius: 5%;
+  background: rgb(4,5,244);
+background: linear-gradient(311deg, rgba(4,5,244,1) 6%, rgba(251,242,242,0.4962359943977591) 50%, rgba(247,3,3,0.5494572829131652) 100%);
 
  }
  .letter{
   color: #f1eded;
-  font-size: 1.675em;
+  font-size: 1.575em;
  }
