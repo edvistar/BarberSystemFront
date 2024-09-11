@@ -1,3 +1,11 @@
 .full-width{
   width:100%;
 }
+ .colorbar{
+  border-radius: 5%;
+
+ }
+ .letter{
+  color: #f1eded;
+  font-size: 1.675em;
+ }
