@@ -1,7 +1,9 @@
+//import { Servicios } from "src/app/servicios/interfaces/servicios"
 export interface Chair{
-  id: any,
+  id: number,
   name: string,
   numero:number,
   logo: string,
-  ocupada?: boolean
+  ocupada?: boolean,
+  //servicios: Servicios[]
 }

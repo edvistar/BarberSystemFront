@@ -5,6 +5,7 @@ import { ServiciosService } from '../../../servicios/services/servicios.service'
 import { CompartidoService } from '../../../compartido/compartido.service';
 import { Chair } from '../../../chair/interfaces/chair';
 import { Servicios } from '../../../servicios/interfaces/servicios';
+import * as signalR from '@microsoft/signalr';
 
 @Component({
   selector: 'app-orden',
@@ -17,7 +18,10 @@ export class OrdenComponent implements OnInit {
   servicios: Servicios[] = [];
   selectedChairId: number | undefined;
   selectedValue: string | undefined;
-  chairServices: { [key: number]: { services: Servicios[] } } = {};
+  chairServices: { [key: number]: { services: Servicios[] } } = {}; // Asegúrate de que esto esté inicializado como un objeto vacío
+
+  // SignalR connection
+  private hubConnection!: signalR.HubConnection;
 
   constructor(
     private _chairServicio: ChairService,
@@ -26,9 +30,39 @@ export class OrdenComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.iniciarSignalRConnection();
     this.obtenerChairs();
     this.obtenerServicios();
     this.cargarEstadoDesdeLocalStorage();
+  }
+
+  iniciarSignalRConnection() {
+    // Inicializamos la conexión con el hub de SignalR
+    this.hubConnection = new signalR.HubConnectionBuilder()
+      .withUrl('http://localhost:26900/ordenHub',{withCredentials: true}) // Cambia esto a la URL de tu API
+      .build();
+
+    this.hubConnection
+      .start()
+      .then(() => console.log('Conectado a SignalR'))
+      .catch(err => console.error('Error al conectar a SignalR', err));
+
+    // Escuchar actualizaciones de otras sesiones
+    this.hubConnection.on('ReceiveChairUpdate', (chairId: number, status: string, services: any[]) => {
+      this.actualizarEstadoDeSilla(chairId, status, services);
+    });
+  }
+
+  actualizarEstadoDeSilla(chairId: number, status: string, services: any[]) {
+    const chair = this.chairs.find(c => c.numero === chairId);
+    if (chair) {
+      chair.ocupada = status === 'ocupada';
+
+      // Actualiza los servicios de la silla
+      this.chairServices[chairId] = { services };
+
+      this.guardarEstadoEnLocalStorage();
+    }
   }
 
   obtenerChairs() {
@@ -75,6 +109,10 @@ export class OrdenComponent implements OnInit {
         }
 
         this.guardarEstadoEnLocalStorage();
+
+        // Enviar actualización de la silla a través de SignalR
+        this.hubConnection.invoke('UpdateChairStatus', numero, 'ocupada', this.chairServices[numero].services)
+          .catch(err => console.error('Error al enviar actualización de silla', err));
       }
     });
   }
@@ -85,8 +123,9 @@ export class OrdenComponent implements OnInit {
       const selectedServicio = this.servicios.find(servicio => servicio.id === selectedValueAsNumber);
 
       if (selectedServicio) {
-        const services = this.chairServices[this.selectedChairId].services;
+        const services = this.chairServices[this.selectedChairId]?.services || [];
 
+        // Agregar el nuevo servicio solo si no está ya presente
         if (!services.some(service => service.id === selectedServicio.id)) {
           services.push({
             id: selectedServicio.id,
@@ -95,33 +134,56 @@ export class OrdenComponent implements OnInit {
             price: selectedServicio.price
           });
 
+          // Actualizar la silla como ocupada si no lo está
+          if (!this.chairs.some(chair => chair.numero === this.selectedChairId && chair.ocupada)) {
+            this.chairs.forEach(chair => {
+              if (chair.numero === this.selectedChairId) {
+                chair.ocupada = true;
+              }
+            });
+          }
+
+          // Limpiar selección y guardar estado en Local Storage
           this.selectedValue = undefined;
           this.guardarEstadoEnLocalStorage();
+
+          // Sincronizar con SignalR
+          this.hubConnection.invoke('UpdateChairStatus', this.selectedChairId, 'ocupada', services)
+            .catch(err => console.error('Error al enviar actualización de servicios', err));
         }
       }
     }
   }
 
-  quitarServicio(chairId: number, servicioId: number) {
-    const services = this.chairServices[chairId]?.services;
-    if (services) {
-      const index = services.findIndex(service => service.id === servicioId);
-      if (index > -1) {
-        services.splice(index, 1);
+quitarServicio(chairId: number, servicioId: number) {
+  const chairService = this.chairServices[chairId];
+  if (!chairService) {
+      console.error('Silla no encontrada');
+      return;
+  }
+  const services = chairService.services || [];
+  const index = services.findIndex(service => service.id === servicioId);
 
-        if (services.length === 0) {
+  if (index > -1) {
+      services.splice(index, 1);
+
+      // Actualizar el estado de la silla a desocupada si no hay servicios
+      if (services.length === 0) {
           this.chairs.forEach(chair => {
-            if (chair.numero === chairId) {
-              chair.ocupada = false;
-            }
+              if (chair.id === chairId) {
+                  chair.ocupada = false;
+              }
           });
-          this.guardarEstadoEnLocalStorage();
-        } else {
-          this.guardarEstadoEnLocalStorage();
-        }
       }
-    }
+
+      this.guardarEstadoEnLocalStorage();
+
+      // Enviar actualización de servicios de la silla a través de SignalR
+      this.hubConnection.invoke('UpdateChairStatus', chairId, 'ocupada', services)
+          .then(() => console.log('Servicio eliminado y actualización enviada'))
+          .catch(err => console.error('Error al enviar actualización de servicios', err));
   }
+}
 
   calcularTotalPrecio(chairId: number): number {
     return (this.chairServices[chairId]?.services ?? []).reduce((total, service) => total + service.price, 0);
@@ -150,7 +212,6 @@ export class OrdenComponent implements OnInit {
   }
 
   eliminarServicios(numero: number) {
-    // Usar SweetAlert2 para la confirmación
     Swal.fire({
       title: '¿Estás seguro?',
       text: 'Eliminarás todos los servicios de esta silla y la misma estará disponible para ocupar.',
@@ -173,7 +234,6 @@ export class OrdenComponent implements OnInit {
         this.guardarEstadoEnLocalStorage();
         this.actualizarSillasDisponibles();
 
-        // Mostrar mensaje de éxito
         this._compartidoService.mostrarAlerta('Servicios eliminados y silla liberada', 'Completo');
       }
     });
