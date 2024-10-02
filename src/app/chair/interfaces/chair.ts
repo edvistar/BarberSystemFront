@@ -4,6 +4,7 @@ export interface Chair{
   name: string,
   numero:number,
   logo: string,
-  ocupada?: boolean,
+  //ocupada?: boolean,
+  ocuped:boolean
   //servicios: Servicios[]
 }

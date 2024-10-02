@@ -15,6 +15,7 @@ import { ModalChairComponent } from './chair/pages/modal/modal-chair.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { SweetAlert2Module } from '@sweetalert2/ngx-sweetalert2';
 import { ModalServicioComponent } from './servicios/pages/modal/modal-servicio.component';
+import { FormOrdenComponent } from './orden/pages/form-orden/form-orden.component';
 
 
 @NgModule({
@@ -25,7 +26,8 @@ import { ModalServicioComponent } from './servicios/pages/modal/modal-servicio.c
     ServiciosComponent,
     OrdenComponent,
     ModalChairComponent,
-    ModalServicioComponent
+    ModalServicioComponent,
+    FormOrdenComponent
   ],
   imports: [
     BrowserModule,

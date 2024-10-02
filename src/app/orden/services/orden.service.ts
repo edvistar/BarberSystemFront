@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { ApiResponse } from 'src/app/Interfaces/api-response';
 import { environment } from 'src/environments/environment';
 import { Orden } from '../interfaces/orden';
+import { AgregarServicioDto } from '../interfaces/agregarservicio';
 
 
 @Injectable({
@@ -31,4 +32,25 @@ export class OrdenService {
   eliminar(id: number): Observable<ApiResponse>{
       return this.http.delete<ApiResponse>(`${this.baseUrl}${id}`);
       }
+
+  obtenerChairServices(): Observable<any> {
+    return this.http.get(`${this.baseUrl}/chair-services`);
+  }
+
+  agregarServicioASilla(request: AgregarServicioDto): Observable<any> {
+    return this.http.post(`${this.baseUrl}AddServicesChair`,request);
+  }
+
+  quitarServicioDeSilla(request: AgregarServicioDto): Observable<any> {
+    return this.http.delete(`${this.baseUrl}RemoveServicesChair`, { body: request });
+}
+
+eliminarServicioDeSilla(chairId: number, servicioId: number): Observable<any> {
+  return this.http.delete(`${this.baseUrl}RemoveServicesChair?chairId=${chairId}&serviceId=${servicioId}`);
+}
+
+obtenerServiciosPorSilla(chairId: number): Observable<any> {
+  return this.http.get(`${this.baseUrl}GetServicesByChair/${chairId}`);
+}
+
 }

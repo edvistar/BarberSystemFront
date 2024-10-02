@@ -18,7 +18,7 @@ export class ChairService {
   }
   // listaActivos() : Observable<ApiResponse>{
   //   return this.http.get<ApiResponse>(`${this.baseUrl}ListadoActivos`);
-  // }
+  // }EditarEstado
 
   crear(request: Chair): Observable<ApiResponse>{
   return this.http.post<ApiResponse>(`${this.baseUrl}`, request);
@@ -26,6 +26,10 @@ export class ChairService {
 
   editar(request: Chair): Observable<ApiResponse>{
     return this.http.put<ApiResponse>(`${this.baseUrl}`, request);
+    }
+
+  editarEstado(request: Chair): Observable<ApiResponse>{
+    return this.http.patch<ApiResponse>(`${this.baseUrl}EditarEstado`, request);
     }
 
   eliminar(id: number): Observable<ApiResponse>{

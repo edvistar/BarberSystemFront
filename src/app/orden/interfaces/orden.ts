@@ -1,5 +1,8 @@
 export interface Orden{
-  id: any,
-  numero:string,
-  servicios: string
+  id: number;
+  numero: number;
+  servicios: string[]; // Cambiado a array de strings
+  nombreCliente: string;
+  usuarioAtiende: string;
+
 }

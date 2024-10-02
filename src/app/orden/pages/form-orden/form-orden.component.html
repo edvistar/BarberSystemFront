@@ -1,0 +1,40 @@
+<form [formGroup]="formOrden">
+  <mat-card>
+    <h1 class="m-3 text-center"><span>Crear una nueva orden</span></h1>
+    <mat-card-content>
+      <mat-form-field class="mat-30" appearance="fill">
+        <mat-label>Número de Silla</mat-label>
+        <input matInput formControlName="numero" placeholder="Ingrese el Número de la Silla">
+      </mat-form-field>
+
+      <mat-form-field class="mat-30" appearance="fill">
+        <mat-label>Nombre del Cliente</mat-label>
+        <input matInput formControlName="nombreCliente" placeholder="Ingrese el Nombre del Cliente">
+      </mat-form-field>
+
+      <mat-form-field class="mat-30" appearance="fill">
+        <mat-label>Servicios</mat-label>
+        <input matInput formControlName="servicios" placeholder="Ingrese el Servicio" />
+      </mat-form-field>
+      <mat-form-field class="mat-30" appearance="fill">
+        <mat-label>Usuario Que Atiende</mat-label>
+        <input matInput formControlName="usuarioAtiende" placeholder="Ingrese usuario" />
+      </mat-form-field>
+
+
+      <button mat-raised-button color="primary" (click)="enviarOrdenForm()">Enviar Orden</button>
+    </mat-card-content>
+  </mat-card>
+</form>
+
+
+
+
+
+
+
+
+
+
+
+
