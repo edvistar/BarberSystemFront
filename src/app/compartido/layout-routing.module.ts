@@ -7,6 +7,7 @@ import { ChairComponent } from '../chair/pages/chair/chair.component';
 import { NegocioComponent } from '../negocio/negocio.component';
 import { OrdenComponent } from '../orden/pages/orden/orden.component';
 import { ServiciosComponent } from '../servicios/pages/servicios/servicios.component';
+import { FormOrdenComponent } from '../orden/pages/form-orden/form-orden.component';
 
 const routes: Routes = [
   {
@@ -16,6 +17,7 @@ const routes: Routes = [
       {path: 'chair', component: ChairComponent, pathMatch: 'full'},
       {path: 'servicios', component: ServiciosComponent, pathMatch: 'full'},
       {path: 'orden', component: OrdenComponent, pathMatch: 'full'},
+      {path: 'formOrden', component: FormOrdenComponent, pathMatch: 'full'},
       {path: '**', redirectTo: '', pathMatch: 'full'},
     ]
   }

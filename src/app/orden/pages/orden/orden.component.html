@@ -1,57 +1,72 @@
 <div class="container">
   <h1>{{ title }}</h1>
+  <div>
+    <p>{{ username }}</p>
+  </div>
 
   <!-- Lista de Sillas Disponibles -->
   <h2>Sillas Disponibles</h2>
   <ul style="display: inline-flex; list-style: none; padding: 0;">
-    <li *ngFor="let silla of chairs" style="margin: 1rem; border: 1px solid #ccc; border-radius: 8px; padding: 1rem;">
-      <h3>{{ silla.name }}</h3>
-      <img class="display-block" [src]="silla.logo" [alt]="silla.numero" style="height: 100px; width: 100px;">
-      <button (click)="nuevaOrden(silla.numero, silla)" [disabled]="silla.ocupada" class="margen">
-        {{ silla.ocupada ? 'Ocupado' : 'Ocupar' }}
+    <li *ngFor="let chair of chairs" style="margin: 1rem; border: 1px solid #ccc; border-radius: 8px; padding: 1rem;">
+      <h3>{{ chair.name }}</h3>
+      <h3>{{ chair.ocuped ? 'Ocupada' : 'Libre' }}</h3>
+      <img class="display-block" [src]="chair.logo" [alt]="chair.numero" style="height: 100px; width: 100px;">
+
+      <button mat-raised-button color="primary" (click)="nuevaOrden(chair.numero, chair)" [disabled]="chair.ocuped" class="margen">
+        {{ chair.ocuped ? 'Ocupada' : 'Ocupar' }}
       </button>
+      <button mat-raised-button color="warn" (click)="liberarSilla(chair)" [disabled]="!chair.ocuped">Liberar</button>
+
     </li>
   </ul>
 
   <!-- Lista de Sillas Ocupadas -->
-  <h2>Sillas Ocupadas</h2>
-  <ul style="display: inline-flex; list-style: none; padding: 0;">
-    <li *ngFor="let silla of sillasOcupadas" style="margin: 1rem; border: 1px solid #ccc; border-radius: 8px; padding: 1rem;">
-      <h3>{{ silla.name }}</h3>
-      <img class="display-block" [src]="silla.logo" [alt]="silla.numero" style="height: 100px; width: 100px;">
-      <button mat-raised-button color="warn" (click)="liberarSilla(silla)" class="margen">Eliminar servicios</button>
-    </li>
-  </ul>
+  <ng-container *ngIf="sillasOcupadas.length > 0">
+    <h2>Sillas Ocupadas</h2>
+    <ul style="list-style: none; padding: 0;">
+      <ng-container *ngFor="let numero of objectKeys(chairServices)">
+        <li *ngIf="getSillaOcupadaStatus(+numero)" style="margin-bottom: 1rem; border: 1px solid #ccc; border-radius: 8px; padding: 1rem;">
+          <span>Silla Nº {{ numero }} :</span>
+          <ul style="display: inline-flex; list-style: none; padding: 0;">
+            <li *ngFor="let chair of sillasOcupadas"
+                style="margin: 1rem; border: 1px solid #ccc; border-radius: 8px; padding: 1rem;"
+                [hidden]="chair.numero !== +numero">
+              <button mat-raised-button color="warn" (click)="quitarTodosLosServicios(chair.id)" class="margen">
+                Quitar servicios
+              </button>
+              <button mat-raised-button color="warn" (click)="liberarSilla(chair)" class="margen">
+                Liberar Silla
+              </button>
+            </li>
+          </ul>
 
-  <ul style="list-style: none; padding: 0;">
-    <li *ngFor="let numero   of objectKeys(chairServices)" style="margin-bottom: 1rem; border: 1px solid #ccc; border-radius: 8px; padding: 1rem;">
-      <span>Silla Nº {{ numero }}:</span>
+          <!-- Mat-select para agregar servicios a la silla -->
+          <mat-form-field appearance="fill" style="width: 300px; display: block; margin-top: 10px;">
+            <mat-label>Selecciona un servicio</mat-label>
+            <mat-select [disabled]="!getSillaOcupadaStatus(+numero)" [(ngModel)]="selectedValue" name="servicio-{{numero}}">
+              <mat-option *ngFor="let servicio of servicios" [value]="servicio.id">
+                {{ servicio.name }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
 
-      <!-- Acceder a la silla correspondiente desde chairs[] -->
-      <mat-form-field appearance="fill" style="width: 300px; display: block; margin-top: 10px;">
-        <mat-label>Selecciona un servicio</mat-label>
+          <button mat-raised-button color="primary" (click)="agregarServicio()">Agregar Servicio</button>
+          <button mat-raised-button color="warn" (click)="eliminarServicios(+numero)">Eliminar Silla de la lista</button>
 
-        <!-- Verificar si la silla está ocupada -->
-        <mat-select [disabled]="!getSillaOcupadaStatus(+numero)" [(ngModel)]="selectedValue" name="servicio-{{numero }}">
-          <mat-option *ngFor="let servicio of servicios" [value]="servicio.id">
-            {{ servicio.name }}
-          </mat-option>
-        </mat-select>
-      </mat-form-field>
-
-      <button mat-raised-button color="primary" (click)="agregarServicio()">Agregar Servicio</button>
-        <button mat-raised-button color="warn" (click)="eliminarServicios(+numero)">Eliminar Silla de la lista</button>
+          <!-- Lista de servicios de la silla -->
+          <ul>
+            <li *ngFor="let service of (chairServices[+numero]?.services || [])" style="margin-bottom: 0.5rem;">
+              {{ service.name }} - ${{ service.price }}
+              <button mat-button color="warn" (click)="quitarServicio(+numero, service.id)" style="margin-left: 1rem;">Quitar</button>
+            </li>
+          </ul>
 
 
-      <ul>
-        <li *ngFor="let service of chairServices[+numero]?.services" style="margin-bottom: 0.5rem;">
-          {{ service.name }} - ${{ service.price }}
-          <button mat-button color="warn" (click)="quitarServicio(+numero, service.id)" style="margin-left: 1rem;">Quitar</button>
+          <!-- Mostrar el total de los servicios -->
+          <h3>Total: ${{ calcularTotalPrecio(+numero) }}</h3>
+          <button mat-raised-button color="primary" (click)="enviarOrden()">Enviar Orden</button>
         </li>
-      </ul>
-
-      <h3>Total: ${{ calcularTotalPrecio(+numero) }}</h3>
-    </li>
-
-  </ul>
+      </ng-container>
+    </ul>
+  </ng-container>
 </div>
