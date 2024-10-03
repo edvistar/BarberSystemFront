@@ -106,8 +106,6 @@ export class OrdenComponent implements OnInit {
     }
   }
 
-
-
   obtenerChairs() {
     this._chairServicio.lista().subscribe({
       next: (data) => {
@@ -140,7 +138,6 @@ export class OrdenComponent implements OnInit {
       }
     });
   }
-
 
   nuevaOrden(numero: number, chair: Chair) {
     // Ocupar la silla
@@ -180,9 +177,6 @@ export class OrdenComponent implements OnInit {
     // Configuración local: mantener el número de la silla ocupada
     this.selectedChairId = numero;
 }
-
-
-
 
 agregarServicio() {
   if (this.selectedValue && this.selectedChairId) {
@@ -261,123 +255,55 @@ agregarServicio() {
 
 
 
-  quitarServicio(chairId: number, servicioId: number) {
-    const chairService = this.chairServices[chairId];
+quitarServicio(chairId: number, servicioId: number) {
+  const chairService = this.chairServices[chairId];
 
-    if (!chairService) {
-      console.error('Silla no encontrada');
-      return;
-    }
-
-    const servicioIndex = chairService.services.findIndex(service => service.id === servicioId);
-
-    if (servicioIndex === -1) {
-      console.error('Servicio no encontrado en la silla');
-      return;
-    }
-
-    // Llamar al servicio para eliminar el servicio de la base de datos, pasando chairId y servicioId
-    this._ordenService.eliminarServicioDeSilla(chairId, servicioId).subscribe({
-      next: (response) => {
-        console.log('Servicio eliminado:', response);
-
-        if (response && response.isExitoso) {
-          // Eliminar el servicio de la lista localmente
-          chairService.services.splice(servicioIndex, 1);
-
-          // Si ya no hay servicios en la silla, eliminar la silla del listado y actualizar el estado a desocupado
-          if (chairService.services.length === 0) {
-            chairService.ocuped = false; // Marcar la silla como desocupada si no tiene servicios
-            this.chairServices[chairId] = { ...chairService }; // Actualizar el estado local
-          }
-
-          // Mostrar alerta de éxito
-          this._compartidoService.mostrarAlerta('Servicio eliminado exitosamente.', 'Éxito');
-
-          // Notificación de actualización con SignalR
-          this.hubConnection.invoke('UpdateChairStatus', chairId, chairService.ocuped, chairService.services)
-            .catch(err => {
-              console.error('Error al notificar actualización del servicio:', err);
-              this._compartidoService.mostrarAlerta('Error al notificar la actualización del servicio.', 'Error');
-            });
-        } else {
-          const errorMsg = response?.mensaje || 'Error desconocido al eliminar el servicio';
-          console.error('Error en la respuesta al eliminar servicio de la silla:', errorMsg);
-          this._compartidoService.mostrarAlerta(errorMsg, 'Error');
-        }
-      },
-      error: (e) => {
-        console.error('Error al llamar al endpoint eliminarServicioDeSilla:', e);
-        this._compartidoService.mostrarAlerta('Error al eliminar el servicio. Intente de nuevo.', 'Error');
-      }
-    });
+  if (!chairService) {
+    console.error('Silla no encontrada');
+    return;
   }
 
+  const servicioIndex = chairService.services.findIndex(service => service.id === servicioId);
 
+  if (servicioIndex === -1) {
+    console.error('Servicio no encontrado en la silla');
+    return;
+  }
 
+  // Llamar al servicio para eliminar el servicio de la base de datos, pasando chairId y servicioId
+  this._ordenService.eliminarServicioDeSilla(chairId, servicioId).subscribe({
+    next: (response) => {
+      console.log('Servicio eliminado:', response);
+
+      if (response && response.isExitoso) {
+        // Eliminar el servicio de la lista localmente
+        chairService.services.splice(servicioIndex, 1);
+
+        // Mostrar alerta de éxito
+        this._compartidoService.mostrarAlerta('Servicio eliminado exitosamente.', 'Éxito');
+
+        // Notificación de actualización con SignalR
+        this.hubConnection.invoke('UpdateChairStatus', chairId, chairService.ocuped, chairService.services)
+          .catch(err => {
+            console.error('Error al notificar actualización del servicio:', err);
+            this._compartidoService.mostrarAlerta('Error al notificar la actualización del servicio.', 'Error');
+          });
+      } else {
+        const errorMsg = response?.mensaje || 'Error desconocido al eliminar el servicio';
+        console.error('Error en la respuesta al eliminar servicio de la silla:', errorMsg);
+        this._compartidoService.mostrarAlerta(errorMsg, 'Error');
+      }
+    },
+    error: (e) => {
+      console.error('Error al llamar al endpoint eliminarServicioDeSilla:', e);
+      this._compartidoService.mostrarAlerta('Error al eliminar el servicio. Intente de nuevo.', 'Error');
+    }
+  });
+}
 
   calcularTotalPrecio(chairId: number): number {
     return (this.chairServices[chairId]?.services ?? []).reduce((total, service) => total + service.price, 0);
   }
-
-  eliminarServicios(chairId: number) {
-    Swal.fire({
-      title: '¿Estás seguro?',
-      text: 'Eliminarás todos los servicios asociados a esta silla.',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Sí, eliminar todos los servicios',
-      cancelButtonText: 'Cancelar'
-    }).then(async (result) => {
-      if (result.isConfirmed) {
-        // Obtener los servicios asociados a la silla
-        const serviciosAsociados = this.chairServices[chairId]?.services || [];
-
-        if (serviciosAsociados.length === 0) {
-          console.warn(`No hay servicios asociados a la silla con ID ${chairId}`);
-          this._compartidoService.mostrarAlerta('No hay servicios asociados a esta silla.', 'Advertencia');
-        } else {
-          // Iterar sobre cada servicio y eliminarlo uno por uno pasando el chairId y serviceId
-          const eliminaciones = serviciosAsociados.map(async (servicio) => {
-            try {
-              // Usar el ID de la silla y el ID del servicio para eliminarlos
-              const response = await firstValueFrom(this._ordenService.eliminarServicioDeSilla(chairId, servicio.id));
-              if (response && response.isExitoso) {
-                console.log(`Servicio con id ${servicio.id} eliminado exitosamente de la silla ${chairId}`);
-              } else {
-                const errorMessage = response?.mensaje || 'Error desconocido al eliminar el servicio';
-                console.error(`Error al eliminar el servicio con id ${servicio.id}:`, errorMessage);
-                this._compartidoService.mostrarAlerta(errorMessage, 'Error');
-              }
-            } catch (e) {
-              console.error('Error al eliminar el servicio:', e);
-              this._compartidoService.mostrarAlerta('Error al eliminar el servicio. Intente de nuevo.', 'Error');
-            }
-          });
-
-          // Esperar hasta que todos los servicios se eliminen
-          await Promise.all(eliminaciones);
-
-          // Llamar al método liberarSilla para liberar la silla después de eliminar todos los servicios
-          const silla = this.chairs.find(chair => chair.id === chairId); // Usar el ID de la silla para encontrarla
-          if (silla) {
-            this.liberarSilla(silla);
-          } else {
-            console.error(`Silla con ID ${chairId} no encontrada.`);
-          }
-        }
-      }
-    });
-  }
-
-
-
-
-
-
-
 
   getSillaOcupadaStatus(numero: number): boolean {
     const silla = this.chairs.find(chair => chair.numero === numero);
@@ -385,68 +311,98 @@ agregarServicio() {
   }
 
 
+  liberarSilla(chairId: number) {
+    const chairService = this.chairServices[chairId];
 
-  liberarSilla(silla: Chair): void {
-    // Cambiar el estado de la silla a no ocupada (disponible) localmente
-    silla.ocuped = false; // Se asume que silla tiene la propiedad 'ocuped'
+    if (!chairService) {
+        console.error('Silla no encontrada');
+        return;
+    }
 
-    // Llamar al servicio para actualizar el estado de la silla en el backend
-    this._chairServicio.editarEstado(silla).subscribe({
-      next: (response) => {
-        if (response.isExitoso) {
-          console.log(`Silla ${silla.id} liberada exitosamente en el backend.`);
+    // Comprobar si la silla está ocupada
+    if (!chairService.ocuped) {
+        console.error('La silla ya está desocupada.');
+        return;
+    }
 
-          // Actualizar el estado local de las sillas ocupadas
-          // Aquí puedes limpiar los servicios asociados si es necesario
-          //this.chairServices[silla.id].services = []; // Limpiar servicios si es necesario
-         this.chairServices[silla.id].ocuped = false; // Actualizar el estado a no ocupada
+    // Verificar si la silla tiene servicios asociados
+    if (chairService.services && chairService.services.length > 0) {
+        // Mostrar alerta de que no se puede liberar la silla
+        this._compartidoService.mostrarAlerta('No se puede liberar la silla porque tiene servicios asociados.', 'Error');
+        console.error('No se puede liberar la silla porque tiene servicios asociados.');
+        return;
+    } else {
+        // Si no hay servicios, marcar la silla como desocupada directamente
+        chairService.ocuped = false; // Marcar la silla como desocupada
+        this.chairServices[chairId] = { ...chairService }; // Actualizar el estado local
 
-          // Enviar la actualización de estado mediante SignalR
-          if (this.hubConnection.state === signalR.HubConnectionState.Connected) {
-            this.hubConnection.invoke('UpdateChairStatus', silla.id, silla.ocuped, this.chairServices[silla.id].services)
-              .then(() => {
-                console.log(`Silla con ID ${silla.id} liberada y actualización enviada por SignalR.`);
-              })
-              .catch(err => {
-                console.error('Error al enviar la actualización de la silla por SignalR', err);
-              });
-          }
-        } else {
-          console.error(`Error al liberar la silla ${silla.id}:`, response.mensaje);
-        }
-      },
-      error: (error) => {
-        console.error('Error al liberar la silla:', error);
-      },
-      complete: () => {
-        console.log('Liberación de silla completada.');
-      }
-    });
+        // Notificar a través de SignalR
+        this.hubConnection.invoke('UpdateChairStatus', chairId, chairService.ocuped, chairService.services)
+            .then(() => {
+                console.log(`Silla ${chairId} liberada sin servicios.`);
+                this._compartidoService.mostrarAlerta('Silla liberada exitosamente.', 'Éxito');
+            })
+            .catch(err => {
+                console.error('Error al notificar la liberación de la silla:', err);
+                this._compartidoService.mostrarAlerta('Error al notificar la liberación de la silla.', 'Error');
+            });
+    }
+}
+
+eliminarServiciosSilla(chair: Chair): void {
+  const chairService = this.chairServices[chair.id];
+
+  if (!chairService) {
+      console.error('Silla no encontrada');
+      return;
   }
 
-  // liberarSilla(silla: Chair): void {
-  //   silla.ocuped = false; // Set chair as not occupied
+  // Verificar si hay servicios asociados a la silla
+  if (chairService.services && chairService.services.length > 0) {
+      // Hacer una copia de los servicios para evitar problemas de modificación durante la iteración
+      const serviciosAEliminar = chairService.services.slice();
 
-  //   // Update backend
-  //   this._chairServicio.editarEstado(silla).subscribe({
-  //     next: (response) => {
-  //       if (response.isExitoso) {
+      serviciosAEliminar.forEach(service => {
+          this._ordenService.eliminarServicioDeSilla(chair.id, service.id).subscribe({
+              next: (response) => {
+                  console.log('Servicio eliminado:', response);
 
-  //         console.log(`Silla ${silla.id} liberada exitosamente.`);
-  //         this.actualizarSillasOcupadas(); // Update local state of occupied chairs
+                  if (response && response.isExitoso) {
+                      // Eliminar el servicio de la lista localmente
+                      const servicioIndex = chairService.services.findIndex(s => s.id === service.id);
+                      if (servicioIndex !== -1) {
+                          chairService.services.splice(servicioIndex, 1);
+                      }
 
-  //         // SignalR update
-  //         if (this.hubConnection.state === signalR.HubConnectionState.Connected) {
-  //           this.hubConnection.invoke('UpdateChairStatus', silla.id, 'disponible', [])
-  //             .catch(err => console.error('Error updating via SignalR', err));
-  //         }
-  //       }
-  //     },
-  //     error: (error) => {
-  //       console.error('Error al liberar la silla:', error);
-  //     }
-  //   });
-  // }
+                      // Mostrar alerta de éxito
+                      this._compartidoService.mostrarAlerta('Servicio eliminado exitosamente.', 'Éxito');
+
+                      // Notificación de actualización con SignalR
+                      this.hubConnection.invoke('UpdateChairStatus', chair.id, chairService.ocuped, chairService.services)
+                          .catch(err => {
+                              console.error('Error al notificar actualización del servicio:', err);
+                              this._compartidoService.mostrarAlerta('Error al notificar la actualización del servicio.', 'Error');
+                          });
+                  } else {
+                      const errorMsg = response?.mensaje || 'Error desconocido al eliminar el servicio';
+                      console.error('Error en la respuesta al eliminar servicio de la silla:', errorMsg);
+                      this._compartidoService.mostrarAlerta(errorMsg, 'Error');
+                  }
+              },
+              error: (e) => {
+                  console.error('Error al llamar al endpoint eliminarServicioDeSilla:', e);
+                  this._compartidoService.mostrarAlerta('Error al eliminar el servicio. Intente de nuevo.', 'Error');
+              }
+          });
+      });
+  } else {
+      this._compartidoService.mostrarAlerta('No hay servicios asociados a esta silla.', 'Info');
+  }
+}
+
+
+
+
 
 
 
@@ -471,9 +427,9 @@ agregarServicio() {
       next: (response) => {
         if (response.isExitoso) {
           Swal.fire('Éxito', 'Orden enviada correctamente', 'success');
-          this.chairServices[this.selectedChairId] = { services: [], ocuped: false }; // Limpiar servicios y establecer ocupada en false
 
-          this.liberarSilla(this.chairs.find(chair => chair.numero === this.selectedChairId)!); // Liberar la silla
+          // Llamar a eliminarServiciosLiberarSilla para limpiar servicios y liberar la silla
+          this.eliminarServiciosLiberarSilla(this.selectedChairId);
         } else {
           Swal.fire('Error', 'No se pudo enviar la orden', 'error');
         }
@@ -485,57 +441,24 @@ agregarServicio() {
     });
   }
 
-  quitarTodosLosServicios(chairId: number) {
-    // Obtener los servicios asociados a la silla
-    const serviciosAsociados = this.chairServices[chairId]?.services || [];
+  eliminarServiciosLiberarSilla(chairId: number) {
+    const chairService = this.chairServices[chairId];
 
-    // Si no hay servicios, no hay nada que hacer
-    if (serviciosAsociados.length === 0) {
-      console.warn(`No hay servicios asociados a la silla con ID ${chairId}`);
-      return; // Puedes agregar aquí un mensaje si lo deseas
+    // Limpiar los servicios de la silla
+    if (chairService && chairService.services) {
+      chairService.services.forEach(async (service) => {
+        await this._ordenService.eliminarServicioDeSilla(chairId, service.id).toPromise();
+      });
+
+      // Limpiar servicios y establecer ocupada en false
+      this.chairServices[chairId] = { services: [], ocuped: false };
+
+      // Notificación de actualización con SignalR
+      this.hubConnection.invoke('UpdateChairStatus', chairId, false, [])
+        .catch(err => {
+          console.error('Error al notificar actualización del servicio:', err);
+        });
     }
-
-    // Iterar sobre cada servicio y eliminarlo uno por uno pasando el chairId y serviceId
-    const eliminaciones = serviciosAsociados.map(async (servicio) => {
-      try {
-        // Usar el ID de la silla y el ID del servicio para eliminarlos
-        const response = await firstValueFrom(this._ordenService.eliminarServicioDeSilla(chairId, servicio.id));
-        if (response && response.isExitoso) {
-          console.log(`Servicio con id ${servicio.id} eliminado exitosamente de la silla ${chairId}`);
-        } else {
-          const errorMessage = response?.mensaje || 'Error desconocido al eliminar el servicio';
-          console.error(`Error al eliminar el servicio con id ${servicio.id}:`, errorMessage);
-        }
-      } catch (e) {
-        console.error('Error al eliminar el servicio:', e);
-      }
-    });
-
-    // Esperar hasta que todos los servicios se eliminen
-    Promise.all(eliminaciones).then(() => {
-      // Aquí puedes actualizar la vista si es necesario
-      // Por ejemplo, eliminando la silla de la lista de sillas ocupadas
-      this.chairServices[chairId].services = []; // Actualiza los servicios en la vista
-    });
   }
 
-  // ocuparSilla(silla: Chair) {
-  //   silla.ocuped = true; // Actualizamos el estado localmente primero
-  //   this._chairServicio.editarEstado(silla).subscribe({
-  //     next: (response) => {
-  //       if (response.isExitoso) {
-  //         console.log(`Silla ${silla.id} ocupada/liberada exitosamente.`);
-  //       } else {
-  //         console.error(`Error al actualizar el estado de la silla ${silla.id}:`, response.mensaje);
-  //       }
-  //     },
-  //     error: (error) => {
-  //       console.error('Error al actualizar el estado de la silla:', error);
-  //     },
-  //     complete: () => {
-  //       console.log('Actualización de estado completada.');
-  //     }
-  //   });
-
-  // }
 }
