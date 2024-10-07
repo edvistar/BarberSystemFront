@@ -36,7 +36,8 @@ export class LoginComponent {
     this.UsuarioService.iniciarSesion(request).subscribe({
       next: (response) => {
         this.CompartidoService.guardarSesion(response);
-        this.router.navigate(['layout'])
+        this.router.navigate(['layout']);
+
       },
       complete: ()=>{
         this.mostrarLoading = false;

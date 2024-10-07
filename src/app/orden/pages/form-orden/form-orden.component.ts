@@ -1,11 +1,11 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { Orden } from '../../interfaces/orden';
 import { UsuarioService } from '../../../usuario/services/usuario.service'; // Asegúrate de que la ruta sea correcta
 import { OrdenService } from '../../services/orden.service'; // Servicio para manejar órdenes
 import { Login } from 'src/app/usuario/interfaces/login';
 import { CompartidoService } from 'src/app/compartido/compartido.service';
 import { Servicios } from '../../../servicios/interfaces/servicios';
+import { Orden } from '../../interfaces/orden';
 
 @Component({
   selector: 'app-form-orden',

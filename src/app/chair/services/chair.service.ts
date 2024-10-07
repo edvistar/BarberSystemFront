@@ -28,9 +28,10 @@ export class ChairService {
     return this.http.put<ApiResponse>(`${this.baseUrl}`, request);
     }
 
-  editarEstado(request: Chair): Observable<ApiResponse>{
-    return this.http.patch<ApiResponse>(`${this.baseUrl}EditarEstado`, request);
-    }
+  // En tu servicio
+  editarEstado(request: Chair): Observable<any> {
+    return this.http.patch(`${this.baseUrl}EditarEstado`, request);
+  }
 
   eliminar(id: number): Observable<ApiResponse>{
       return this.http.delete<ApiResponse>(`${this.baseUrl}${id}`);

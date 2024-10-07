@@ -24,8 +24,7 @@ export class ModalChairComponent implements OnInit {
     this.formChair = this.fb.group({
       name: ['', Validators.required],
       numero: ['', Validators.required],
-      logo: ['', Validators.required],
-      ocuped: ['', Validators.required]
+      logo: ['', Validators.required]
     });
     if(this.datosChair != null){
       this.titulo = 'Editar';
@@ -38,8 +37,7 @@ export class ModalChairComponent implements OnInit {
       this.formChair.patchValue({
         name: this.datosChair.name,
         numero: this.datosChair.numero,
-        logo: this.datosChair.logo,
-        ocuped: this.datosChair.ocuped
+        logo: this.datosChair.logo
       })
     }
   }
