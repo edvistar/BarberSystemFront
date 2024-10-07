@@ -19,6 +19,7 @@ export class ChairComponent implements OnInit, AfterViewInit {
     'name',
     'numero',
     'logo',
+    'ocuped',
     'acciones'
   ];
 
