@@ -10,6 +10,7 @@ import { ServiciosComponent } from '../servicios/pages/servicios/servicios.compo
 import { FormOrdenComponent } from '../orden/pages/form-orden/form-orden.component';
 import { authGuard } from '../_guards/auth.guard';
 
+
 const routes: Routes = [
   {
     path: '', component: LayoutComponent,
