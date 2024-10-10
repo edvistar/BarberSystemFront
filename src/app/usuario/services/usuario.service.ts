@@ -6,6 +6,7 @@ import { Sesion } from '../interfaces/sesion';
 import { Login } from '../interfaces/login';
 import {jwtDecode} from 'jwt-decode'; // Importa correctamente el método
 import { ApiResponse } from 'src/app/Interfaces/api-response';
+import { CookieService } from 'ngx-cookie-service';
 
 
 @Injectable({
@@ -14,11 +15,14 @@ import { ApiResponse } from 'src/app/Interfaces/api-response';
 export class UsuarioService {
   baseUrl: string = environment.apiUrl + 'usuario/';
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private cookieService: CookieService) { }
 
   lista() : Observable<ApiResponse>{
 
     return this.http.get<ApiResponse>(`${this.baseUrl}`);
+
+
+
   }
 
   // Método para iniciar sesión
