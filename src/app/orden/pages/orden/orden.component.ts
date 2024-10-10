@@ -193,7 +193,7 @@ obtenerEstadoSillas() {
               this._compartidoService.mostrarAlerta('No se encontraron datos', 'Advertencia!');
           }
       },
-      error: (e) => {
+      error: (e) => {this._compartidoService.mostrarAlerta(e.error.mensaje, 'Error!')
           console.error('Error al obtener las sillas', e);
       }
   });
@@ -212,7 +212,7 @@ obtenerEstadoSillas() {
           this._compartidoService.mostrarAlerta('No se encontraron servicios', 'Advertencia!');
         }
       },
-      error: (e) => {
+      error: (e) => {this._compartidoService.mostrarAlerta(e.error.mensaje, 'Error!');
         console.error('Error al obtener los servicios', e);
       }
     });

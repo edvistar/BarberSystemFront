@@ -1,4 +1,4 @@
 export interface Sesion{
-  username:string,
+  userName:string,
   token: string
 }

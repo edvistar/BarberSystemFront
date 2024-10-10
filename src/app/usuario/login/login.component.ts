@@ -4,6 +4,7 @@ import { UsuarioService } from '../services/usuario.service';
 import { CompartidoService } from '../../compartido/compartido.service';
 import { Router } from '@angular/router';
 import { Login } from '../interfaces/login';
+import { CookieService } from 'ngx-cookie-service';
 
 @Component({
   selector: 'app-login',
@@ -19,7 +20,8 @@ export class LoginComponent {
   constructor (private fb: FormBuilder,
                 private router: Router,
                 private UsuarioService: UsuarioService,
-                private CompartidoService: CompartidoService){
+                private CompartidoService: CompartidoService,
+                private cookieService: CookieService){
     this.formLogin = this.fb.group({
       username:['', Validators.required],
       password:['', Validators.required]
@@ -30,12 +32,21 @@ export class LoginComponent {
   iniciarSesion(){
     this.mostrarLoading = true;
     const request: Login = {
-      username: this.formLogin.value.username,
+      userName: this.formLogin.value.username,
       password: this.formLogin.value.password
     };
     this.UsuarioService.iniciarSesion(request).subscribe({
       next: (response) => {
         this.CompartidoService.guardarSesion(response);
+        this.cookieService.set(
+          'Authorization',
+          `Bearer ${response.token}`,
+          undefined,
+          '/',
+          undefined,
+          true,
+          'Strict'
+        );
         this.router.navigate(['layout']);
 
       },

@@ -26,24 +26,24 @@ export class UsuarioService {
     return this.http.post<Sesion>(`${this.baseUrl}login`, request);
   }
 
-  // Método para guardar el token en el almacenamiento local
-  guardarToken(token: string): void {
-    localStorage.setItem('auth_token', token);
-  }
+  // // Método para guardar el token en el almacenamiento local
+  // guardarToken(token: string): void {
+  //   localStorage.setItem('auth_token', token);
+  // }
 
-  // Método para eliminar el token del almacenamiento local
-  eliminarToken(): void {
-    localStorage.removeItem('auth_token');
-  }
-   // Método para obtener la sesión del usuario decodificando el token
-   obtenerSesion(): any {
-    const token = localStorage.getItem('auth_token');
-    if (token) {
-      const decodedToken: any = jwtDecode(token); // Decodifica el token
-      return decodedToken; // Devuelve la información decodificada del token
-    }
-    return null; // Si no hay token, devuelve null
-  }
+  // // Método para eliminar el token del almacenamiento local
+  // eliminarToken(): void {
+  //   localStorage.removeItem('auth_token');
+  // }
+  //  // Método para obtener la sesión del usuario decodificando el token
+  //  obtenerSesion(): any {
+  //   const token = localStorage.getItem('auth_token');
+  //   if (token) {
+  //     const decodedToken: any = jwtDecode(token); // Decodifica el token
+  //     return decodedToken; // Devuelve la información decodificada del token
+  //   }
+  //   return null; // Si no hay token, devuelve null
+  // }
 
 
   // Método en UsuarioService

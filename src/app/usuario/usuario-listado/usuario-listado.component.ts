@@ -28,47 +28,49 @@ export class UsuarioListadoComponent implements OnInit, AfterViewInit {
 
 
 
-// obtenerUsuarios(){
-//   this._usuarioService.lista().subscribe({
-//     next: (data) => {
-//         if(data.isExitoso)
-//         {
-//           this.dataSource = new MatTableDataSource(data.resultado);
-//           this.dataSource.paginator = this.paginacionTabla;
-//         } else
-//           this._compartidoService.mostrarAlerta(
-//             'No se  encontraron datos',
-//             'Advertencia!'
-//           );
-//       },
-//         error: (e) => {}
-//   });
-// }
-obtenerUsuarios() {
+obtenerUsuarios(){
   this._usuarioService.lista().subscribe({
     next: (data) => {
-      console.log("Aqui va la data", data);
-      console.log("Valor de isExitoso:", data.isExitoso); // Añade este log
-      if (data.isExitoso) {
-        console.log("Data exitosa", data)
-        this.dataSource = new MatTableDataSource(data.resultado);
-        this.dataSource.paginator = this.paginacionTabla;
-      } else {
-        this._compartidoService.mostrarAlerta(
-          'No se encontraron datos',
-          'Advertencia!'
-        );
-      }
-    },
-    error: (e) => {
-      console.error('Error al obtener usuarios:', e); // Registra el error
-      this._compartidoService.mostrarAlerta(
-        'Error al obtener los usuarios. Inténtalo de nuevo más tarde.',
-        'Error!'
-      );
-    }
+        if(data.isExitoso)
+        {
+          this.dataSource = new MatTableDataSource(data.resultado);
+          this.dataSource.paginator = this.paginacionTabla;
+        } else
+          this._compartidoService.mostrarAlerta(
+            'No se  encontraron datos',
+            'Advertencia!'
+          );
+      },
+        error: (e) => {
+          this._compartidoService.mostrarAlerta(e.error.mensaje, 'Error!')
+        }
   });
 }
+// obtenerUsuarios() {
+//   this._usuarioService.lista().subscribe({
+//     next: (data) => {
+//       console.log("Aqui va la data", data);
+//       console.log("Valor de isExitoso:", data.isExitoso); // Añade este log
+//       if (data.isExitoso) {
+//         console.log("Data exitosa", data)
+//         this.dataSource = new MatTableDataSource(data.resultado);
+//         this.dataSource.paginator = this.paginacionTabla;
+//       } else {
+//         this._compartidoService.mostrarAlerta(
+//           'No se encontraron datos',
+//           'Advertencia!'
+//         );
+//       }
+//     },
+//     error: (e) => {
+//       console.error('Error al obtener usuarios:', e); // Registra el error
+//       this._compartidoService.mostrarAlerta(
+//         'Error al obtener los usuarios. Inténtalo de nuevo más tarde.',
+//         'Error!'
+//       );
+//     }
+//   });
+// }
 
 nuevoUsuario(){
 
