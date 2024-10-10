@@ -1,10 +1,11 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { Sesion } from '../interfaces/sesion';
 import { Login } from '../interfaces/login';
 import {jwtDecode} from 'jwt-decode'; // Importa correctamente el método
+import { ApiResponse } from 'src/app/Interfaces/api-response';
 
 
 @Injectable({
@@ -14,6 +15,11 @@ export class UsuarioService {
   baseUrl: string = environment.apiUrl + 'usuario/';
 
   constructor(private http: HttpClient) { }
+
+  lista() : Observable<ApiResponse>{
+
+    return this.http.get<ApiResponse>(`${this.baseUrl}`);
+  }
 
   // Método para iniciar sesión
   iniciarSesion(request: Login): Observable<Sesion> {
@@ -38,5 +44,17 @@ export class UsuarioService {
     }
     return null; // Si no hay token, devuelve null
   }
+
+
+  // Método en UsuarioService
+// lista(): Observable<ApiResponse> {
+//   const token = localStorage.getItem('auth_token'); // Obtener el token
+//   const headers = new HttpHeaders({
+//       'Authorization': `Bearer ${token}` // Formato correcto del encabezado
+//   });
+
+//   return this.http.get<ApiResponse>(`${this.baseUrl}`, { headers })
+
+// }
 }
 
