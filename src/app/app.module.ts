@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import {HttpClientModule} from '@angular/common/http';
+import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
 import { ChairComponent } from './chair/pages/chair/chair.component';
 import { NegocioComponent } from './negocio/negocio.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -16,6 +16,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { SweetAlert2Module } from '@sweetalert2/ngx-sweetalert2';
 import { ModalServicioComponent } from './servicios/pages/modal/modal-servicio.component';
 import { FormOrdenComponent } from './orden/pages/form-orden/form-orden.component';
+import { AuthInterceptor } from './interceptors/auth.interceptor';
 
 
 @NgModule({
@@ -36,7 +37,13 @@ import { FormOrdenComponent } from './orden/pages/form-orden/form-orden.componen
     BrowserAnimationsModule,
     UsuarioModule, MaterialModule, FormsModule, ReactiveFormsModule,SweetAlert2Module
   ],
-  providers: [],
+  providers: [
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass:AuthInterceptor,
+      multi: true
+    }
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

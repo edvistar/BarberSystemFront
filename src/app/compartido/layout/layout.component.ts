@@ -18,7 +18,7 @@ export class LayoutComponent implements OnInit {
     const usuarioSesion = this.compartidoService.obtenerSesion();
     if(usuarioSesion!=null)
     {
-      this.username = usuarioSesion.userName;//este es el userName como viene del backend
+      this.username = usuarioSesion;//este es el userName como viene del backend
     }
   }
   cerrarSesion(){
