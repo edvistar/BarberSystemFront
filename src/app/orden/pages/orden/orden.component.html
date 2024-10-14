@@ -20,7 +20,7 @@
   </ul>
 
   <!-- Lista de Sillas Ocupadas -->
-  <ng-container *ngIf="sillasOcupadas.length > 0">
+  <ng-container *ngIf="ngContainerVisible">
     <h2>Sillas Ocupadas</h2>
     <ul style="list-style: none; padding: 0;">
       <ng-container *ngFor="let numero of objectKeys(chairServices)">
@@ -29,37 +29,35 @@
 
           <span>Silla Nº {{ numero }} :</span>
 
+          <!-- Botón para eliminar todos los servicios asociados a la silla -->
           <ul style="display: inline-flex; list-style: none; padding: 0;">
-            <li *ngFor="let chair of sillasOcupadas"
-                style="margin: 1rem; border: 1px solid #ccc; border-radius: 8px; padding: 1rem;"
-                [hidden]="chair.numero !== +numero">
-
-              <button mat-raised-button color="warn"
-                      (click)="eliminarServiciosSilla(chair)" class="margen">
+            <li *ngIf="getSillaOcupadaStatus(+numero)"
+                style="margin: 1rem; border: 1px solid #ccc; border-radius: 8px; padding: 1rem;">
+              <button mat-raised-button color="warn" (click)="eliminarServiciosSilla(+numero)" class="margen">
                 Quitar servicios
               </button>
             </li>
           </ul>
 
           <!-- Mat-select para agregar servicios a la silla -->
-<mat-form-field appearance="fill" style="width: 300px; display: block; margin-top: 10px;">
-  <mat-label>Selecciona un servicio</mat-label>
-  <mat-select [disabled]="!getSillaOcupadaStatus(+numero)"
-              [(ngModel)]="chairServices[+numero].selectedValue"
-              name="servicio-{{numero}}">
-    <mat-option *ngFor="let servicio of servicios" [value]="servicio.id">
-      {{ servicio.name }}
-    </mat-option>
-  </mat-select>
-</mat-form-field>
+          <mat-form-field appearance="fill" style="width: 300px; display: block; margin-top: 10px;">
+            <mat-label>Selecciona un servicio</mat-label>
+            <mat-select [disabled]="!getSillaOcupadaStatus(+numero)"
+                        [(ngModel)]="chairServices[+numero].selectedValue"
+                        name="servicio-{{numero}}">
+              <mat-option *ngFor="let servicio of servicios" [value]="servicio.id">
+                {{ servicio.name }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
 
-
+          <!-- Botón para agregar el servicio seleccionado -->
           <button mat-raised-button color="primary"
-                  (click)="agregarServicio()">
+                  (click)="agregarServicio(+numero)">
             Agregar Servicio
           </button>
 
-          <!-- Lista de servicios de la silla -->
+          <!-- Lista de servicios asociados a la silla -->
           <ul>
             <li *ngFor="let service of (chairServices[+numero]?.services || [])"
                 style="margin-bottom: 0.5rem;">
@@ -82,5 +80,6 @@
         </li>
       </ng-container>
     </ul>
-  </ng-container>
+</ng-container>
+
 </div>
