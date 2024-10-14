@@ -52,5 +52,9 @@ eliminarServicioDeSilla(chairId: number, servicioId: number): Observable<any> {
 obtenerServiciosPorSilla(chairId: number): Observable<any> {
   return this.http.get(`${this.baseUrl}GetServicesByChair/${chairId}`);
 }
+// obtenerServiciosPorSilla(chairId: number): Observable<Servicio[]> {
+//   return this.http.get<Servicio[]>(`${this.baseUrl}GetServicesByChair/${chairId}`);
+// }
+
 
 }
