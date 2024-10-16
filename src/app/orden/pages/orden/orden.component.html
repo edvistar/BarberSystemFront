@@ -59,7 +59,7 @@
 
           <!-- Lista de servicios asociados a la silla -->
           <ul>
-            <li *ngFor="let service of (chairServices[+numero]?.services || [])"
+            <li *ngFor="let service of (chairServices[+numero]?.services)"
                 style="margin-bottom: 0.5rem;">
               {{ service.name }} - ${{ service.price }}
               <button mat-button color="warn"
@@ -70,13 +70,13 @@
 
           <!-- Mostrar el total de los servicios -->
           <h3>Total: ${{ calcularTotalPrecio(+numero) }}</h3>
-
-          <!-- Botón para enviar la orden, deshabilitado si no hay servicios -->
+ <!-- Botón para enviar la orden, deshabilitado si no hay servicios -->
           <button mat-raised-button color="primary"
                   (click)="enviarOrden(+numero)"
                   [disabled]="!chairServices[+numero] || chairServices[+numero].services.length === 0">
             Enviar Orden
           </button>
+
         </li>
       </ng-container>
     </ul>
