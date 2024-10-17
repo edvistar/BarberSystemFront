@@ -11,13 +11,7 @@ import { Orden } from '../../interfaces/orden';
 import { OrdenService } from '../../services/orden.service';
 import { FormBuilder } from '@angular/forms';
 import { AgregarServicioDto } from '../../interfaces/agregarservicio';
-
-import { catchError, tap } from 'rxjs/operators';
-import { of } from 'rxjs'; // Esto es necesario para usar 'of' en el manejo de errores
-import { firstValueFrom } from 'rxjs';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { forkJoin } from 'rxjs';
-import { ChangeDetectorRef, NgZone } from '@angular/core';
 
 @Component({
   selector: 'app-orden',
@@ -32,7 +26,7 @@ export class OrdenComponent implements OnInit {
   selectedValue: string | undefined;
   selectedValues: { [key: number]: number } = {}; // Un objeto donde la clave es el número de la silla
   numero: number | null = null; // Número de la silla seleccionada
-  sillaOcupada: boolean = false; // Estado de ocupación de la silla seleccionada
+  //sillaOcupada: boolean = false; // Estado de ocupación de la silla seleccionada
   sillasOcupadas: Chair[] = [];
   //chairServices: { [key: number]: { services: Servicios[]; ocuped: boolean } } = {};
   ngContainerVisible: boolean = false; // Declaración de la variable
@@ -44,9 +38,18 @@ export class OrdenComponent implements OnInit {
     };
   } = {};
 
+  chairServicesdos: {
+    [key: number]: {
+
+      ocuped: number; // Estado de ocupación de la silla
+
+    };
+  } = {};
+
   ordenId: number | null = null;
   private hubConnection!: signalR.HubConnection;
   username: any;
+  zone: any;
   constructor(
     private fb: FormBuilder,
     private _chairServicio: ChairService,
@@ -55,59 +58,46 @@ export class OrdenComponent implements OnInit {
     private _usuarioService: UsuarioService,
     private _ordenService: OrdenService,
     private snackBar: MatSnackBar,
-    private cdr: ChangeDetectorRef,
-    private ngZone: NgZone,
     private appRef: ApplicationRef
   ) {}
 
   ngOnInit(): void {
+
+    this.iniciarSignalRConnection();
+    this.obtenerEstadoSillas();
     // Inicializa chairServices si es necesario
     if (!this.chairServices) {
       this.chairServices = {};
     }
-    this.obtenerChairs();
-    this.iniciarSignalRConnection();
-    this.obtenerEstadoSillas();
     this.obtenerServicios();
-    console.log('Estado de las sillas cargado:', this.chairServices);
-    // Verificar el estado de selectedChairId al cargar la vista
 
     this.loadChairServices();
-
-    // Verifica que chairServices tenga datos
-    console.log('Estado inicial de chairServices:', this.chairServices);
-    //this.agregarServicio(this.numero);
-    this.actualizarSillasOcupadas();
 
     const usuarioToken = this._compartidoService.obtenerSesion();
     if (usuarioToken != null) {
       this.username = usuarioToken.userName;
     }
-    // En tu método donde recibes la actualización de SignalR
-    this.hubConnection.on(
-      'ReceiveChairUpdate',
-      (chairId: number, ocuped: number, services: any[]) => {
-        console.log(
-          `Actualizando estado para la silla ${chairId}. Ocupado: ${ocuped}`,
-          services
-        );
 
-        this.ngZone.run(() => {
-          if (this.chairServices[chairId]) {
-            this.chairServices[chairId].ocuped = ocuped;
-            this.chairServices[chairId].services = services;
-            console.log('chairServices actualizado:', this.chairServices);
+    // En el evento de SignalR, ejecuta dentro de la zona
+    this.hubConnection.on('ReceiveChairUpdate', (chairId: number, ocuped: number, services: any[]) => {
+      console.log(`Evento SignalR recibido para la silla ${chairId}. Estado: ${ocuped}`, services);
 
-            // Forzar la detección de cambios
-            this.appRef.tick();
-          } else {
-            console.error(
-              `No se encontró chairServices para chairId ${chairId}`
-            );
-          }
-        });
+      if (this.chairServices[chairId]) {
+        // Actualizamos la ocupación y los servicios para la silla
+        this.chairServices[chairId] = {
+          ...this.chairServices[chairId],
+          ocuped: ocuped,
+          services: services
+        };
+
+        console.log('Estado de chairServices actualizado:', this.chairServices);
+        // Ejecutar el método obtenerEstadoSillas() para volver a cargar el estado de todas las sillas
+       this.obtenerEstadoSillas();
+
+      } else {
+        console.error(`No se encontró chairServices para chairId ${chairId}`);
       }
-    );
+    });
 
     this.hubConnection.on(
       'ReceiveServiceUpdate',
@@ -145,13 +135,16 @@ export class OrdenComponent implements OnInit {
   }
 
   registrarEventos() {
-    this.hubConnection.on(
-      'ReceiveChairUpdate',
-      (chairId: number, ocuped: number, services: Servicios[]) => {
-        console.log('Evento recibido:', { chairId, ocuped, services });
-        //this.actualizarEstadoDeSilla(chairId, ocuped, services);
-      }
-    );
+    this.hubConnection.on('ReceiveChairUpdate', (chairId, ocupedNumber, services) => {
+      console.log(`Actualización recibida para la silla ${chairId}. Ocupado: ${ocupedNumber}, Servicios:`, services);
+
+      // Actualizar el estado local de la silla
+      this.chairServices[chairId] = {
+        ocuped: ocupedNumber,
+        services: services || [],
+      };
+    });
+
     this.hubConnection.on(
       'ReceiveServiceUpdate',
       (chairId: number, serviceId: number, services: Servicios[]) => {
@@ -171,7 +164,11 @@ export class OrdenComponent implements OnInit {
   objectKeys(obj: any): string[] {
     return Object.keys(obj);
   }
-
+  updateLocalChairStatus(chairId: number, ocuped: number, services: any[]) {
+    if (this.hubConnection.state === signalR.HubConnectionState.Connected) {
+      console.log('SignalR en el evento');
+    }
+  }
   // Método para verificar si hay sillas ocupadas
   checkOccupiedChairs(): boolean {
     // Lógica para determinar si hay al menos una silla ocupada
@@ -303,8 +300,6 @@ export class OrdenComponent implements OnInit {
     this.selectedChairId = chairId;
   }
 
-  // Método para obtener el estado inicial de las sillas
-
   obtenerEstadoSillas() {
     console.log('Cargando estado de sillas...');
     this._chairServicio.lista().subscribe({
@@ -319,35 +314,32 @@ export class OrdenComponent implements OnInit {
               ocuped: chair.ocuped,
             };
 
+
             // Obtener servicios para cada silla
             this._ordenService.obtenerServiciosPorSilla(chair.id).subscribe({
               next: (servicesResponse) => {
-                if (servicesResponse.isExitoso) {
-                  this.chairServices[chair.id].services =
-                    servicesResponse.servicios; // Almacenar servicios
-                  console.log(
-                    `Servicios cargados para la silla ${chair.id}:`,
-                    servicesResponse.servicios
-                  );
+                this.chairServices[chair.id].services =
+                servicesResponse.servicios; // Almacenar servicios
+              console.log(
+                `Servicios cargados para la silla ${chair.id}:`,
+                servicesResponse.servicios
+              );
 
-                  // Aquí puedes decidir si mostrar el ng-container
-                  if (chair.ocuped === 1) {
-                    this.ngContainerVisible = true; // Asegúrate de que esté visible si está ocupada
-                  }
-                }
+               },
+               error: (error) => {
+                // Este error solo se manejará si hay un problema técnico con la API
+                console.log(`No hay servicios para la silla ${chair.id}:`, error);
               },
-              error: (error) =>
-                console.error(
-                  `Error al cargar servicios para la silla ${chair.id}:`,
-                  error
-                ),
-            });
-          });
 
-          // Aquí aseguramos que el ng-container esté visible si alguna silla está ocupada
+            });
+            this.getSillaOcupadaStatus(chair.id);
+
+
+          // Aseguramos que el ng-container esté visible si alguna silla está ocupada
           this.ngContainerVisible = this.chairs.some(
             (chair) => chair.ocuped === 1
           );
+        });
         } else {
           this._compartidoService.mostrarAlerta(
             'No se encontraron datos',
@@ -361,6 +353,7 @@ export class OrdenComponent implements OnInit {
       },
     });
   }
+
 
   cargarServiciosPorSilla(chairId: number) {
     this._ordenService.obtenerServiciosPorSilla(chairId).subscribe({
@@ -668,8 +661,8 @@ export class OrdenComponent implements OnInit {
 
   getSillaOcupadaStatus(numero: number): boolean {
     const silla = this.chairs.find((chair) => chair.id === numero); // Busca la silla por su ID
-    return !!(silla && silla.ocuped === 1); // Devuelve true si está ocupada, de lo contrario false
-    console.log('getSillaOcupadaStatus', silla);
+
+    return !!(silla && silla.ocuped === 1);
   }
 
   liberarSilla(chair: Chair): void {
@@ -696,7 +689,7 @@ export class OrdenComponent implements OnInit {
     // Llamar al servicio para actualizar el estado de la silla en el backend
     this._chairServicio.editarEstado(chair).subscribe({
       next: (response) => {
-        console.log('Response:', response); // Para depuración
+        console.log('Response respuesta al liberar:', response.resultado); // Para depuración
         if (response.isExitoso) {
           console.log(`Silla ${chair.id} liberada exitosamente en el backend.`);
 
@@ -708,6 +701,7 @@ export class OrdenComponent implements OnInit {
             this.hubConnection.state === signalR.HubConnectionState.Connected
           ) {
             let ocupedBool: boolean = chair.ocuped === 0;
+            ocupedBool = false;
             this.hubConnection
               .invoke(
                 'UpdateChairStatus',
@@ -717,7 +711,7 @@ export class OrdenComponent implements OnInit {
               )
               .then(() => {
                 console.log(
-                  `Silla con ID ${chair.id} liberada y actualización enviada por SignalR.`
+                  `Silla con ID ${chair.id} liberada y actualización enviada por SignalR. estado ${ocupedBool}`
                 );
               })
               .catch((err) => {
@@ -745,6 +739,7 @@ export class OrdenComponent implements OnInit {
     });
   }
 
+
   eliminarServiciosSilla(chairId: number): void {
     const chairService = this.chairServices[chairId];
 
@@ -759,67 +754,77 @@ export class OrdenComponent implements OnInit {
       const serviciosAEliminar = chairService.services.slice();
 
       serviciosAEliminar.forEach((service) => {
-        this._ordenService
-          .eliminarServicioDeSilla(chairId, service.id)
-          .subscribe({
-            next: (response) => {
-              console.log('Servicio eliminado:', response);
+        this._ordenService.eliminarServicioDeSilla(chairId, service.id).subscribe({
+          next: (response) => {
+            console.log('Servicio eliminado:', response);
 
-              if (response && response.isExitoso) {
-                // Eliminar el servicio de la lista localmente
-                const servicioIndex = chairService.services.findIndex(
-                  (s) => s.id === service.id
-                );
-                if (servicioIndex !== -1) {
-                  chairService.services.splice(servicioIndex, 1);
-                }
+            if (response && response.isExitoso) {
+              console.log('Servicio eliminado exitosamente');
+              this._compartidoService.mostrarAlerta(
+                'Servicio eliminado exitosamente de la silla.',
+                'Éxito'
+              );
 
-                // Mostrar alerta de éxito
-                this._compartidoService.mostrarAlerta(
-                  'Servicio eliminado exitosamente.',
-                  'Éxito'
-                );
+              // Eliminar el servicio de la lista local
+              const servicioIndex = chairService.services.findIndex(
+                (s) => s.id === service.id
+              );
+              if (servicioIndex !== -1) {
+                chairService.services.splice(servicioIndex, 1);
+              }
 
-                // Notificación de actualización con SignalR
+              // Notificación de actualización con SignalR
+              const services = this.chairServices[chairId]?.services || [];
+
+              if (
+                this.hubConnection.state === signalR.HubConnectionState.Connected
+              ) {
                 this.hubConnection
                   .invoke(
-                    'UpdateChairStatus',
+                    'NotifyServiceAddedRemoved', // Método SignalR para notificar cambios en servicios
                     chairId,
-                    chairService.ocuped || false,
-                    chairService.services
+                    service.id,
+                    services
+                  )
+                  .then(() =>
+                    console.log(
+                      'Notificación de servicio eliminado enviada exitosamente.'
+                    )
                   )
                   .catch((err) => {
                     console.error(
-                      'Error al notificar actualización del servicio:',
+                      'Error al notificar eliminación del servicio:',
                       err
                     );
                     this._compartidoService.mostrarAlerta(
-                      'Error al notificar la actualización del servicio.',
+                      'Error al notificar la eliminación del servicio.',
                       'Error'
                     );
                   });
               } else {
-                const errorMsg =
-                  response?.mensaje ||
-                  'Error desconocido al eliminar el servicio';
-                console.error(
-                  'Error en la respuesta al eliminar servicio de la silla:',
-                  errorMsg
-                );
-                this._compartidoService.mostrarAlerta(errorMsg, 'Error');
+                console.error('SignalR no está conectado');
               }
-            },
-            error: (e) => {
+            } else {
+              const errorMsg =
+                response?.mensaje || 'Error desconocido al eliminar el servicio';
               console.error(
-                'Error al llamar al endpoint eliminarServicioDeSilla:',
-                e
+                'Error en la respuesta al eliminar el servicio de la silla:',
+                errorMsg
               );
-              this._compartidoService.mostrarAlerta(
-                'Error al eliminar el servicio. Intente de nuevo.',
-                'Error'
-              );
-            },
-          });
+              this._compartidoService.mostrarAlerta(errorMsg, 'Error');
+            }
+          },
+          error: (e) => {
+            console.error(
+              'Error al llamar al endpoint eliminarServicioDeSilla:',
+              e
+            );
+            this._compartidoService.mostrarAlerta(
+              'Error al eliminar el servicio. Intente de nuevo.',
+              'Error'
+            );
+          },
+        });
       });
     } else {
       this._compartidoService.mostrarAlerta(
@@ -829,11 +834,10 @@ export class OrdenComponent implements OnInit {
     }
   }
 
-  // actualizarSillasOcupadas(): void {
-  //   this.sillasOcupadas = this.chairs.filter(chair => chair.ocuped);
-  // }
+
+
   actualizarSillasOcupadas(): void {
-    // Filtrar las sillas ocupadas
+  // Filtrar las sillas ocupadas
     this.sillasOcupadas = this.chairs.filter((chair) => chair.ocuped); // Asegúrate de que 'ocuped' sea un valor numérico (1 para ocupado, 0 para libre)
 
     // Para depuración: imprimir la lista de sillas ocupadas en la consola
