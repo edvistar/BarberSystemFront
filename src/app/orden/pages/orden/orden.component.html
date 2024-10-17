@@ -24,6 +24,7 @@
     <h2>Sillas Ocupadas</h2>
     <ul style="list-style: none; padding: 0;">
       <ng-container *ngFor="let numero of objectKeys(chairServices)">
+        <!-- <li *ngIf="getSillaOcupadaStatus(+numero)" -->
         <li *ngIf="getSillaOcupadaStatus(+numero)"
             style="margin-bottom: 1rem; border: 1px solid #ccc; border-radius: 8px; padding: 1rem; position: relative;">
 
@@ -31,7 +32,8 @@
 
           <!-- Botón para eliminar todos los servicios asociados a la silla -->
           <ul style="display: inline-flex; list-style: none; padding: 0;">
-            <li *ngIf="getSillaOcupadaStatus(+numero)"
+            <!-- <li *ngIf="getSillaOcupadaStatus(+numero)" -->
+            <li
                 style="margin: 1rem; border: 1px solid #ccc; border-radius: 8px; padding: 1rem;">
               <button mat-raised-button color="warn" (click)="eliminarServiciosSilla(+numero)" class="margen">
                 Quitar servicios
