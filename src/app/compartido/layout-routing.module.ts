@@ -10,6 +10,8 @@ import { ServiciosComponent } from '../servicios/pages/servicios/servicios.compo
 import { FormOrdenComponent } from '../orden/pages/form-orden/form-orden.component';
 import { authGuard } from '../_guards/auth.guard';
 import { UsuarioListadoComponent } from '../usuario/usuario-listado/usuario-listado.component';
+import { UsuarioRegistroComponent } from '../usuario/usuario-registro/usuario-registro.component';
+import { ListadoOrdenComponent } from '../orden/pages/listado-orden/listado-orden.component';
 
 
 const routes: Routes = [
@@ -22,8 +24,11 @@ const routes: Routes = [
       {path: 'chair', component: ChairComponent, pathMatch: 'full'},
       {path: 'servicios', component: ServiciosComponent, pathMatch: 'full'},
       {path: 'orden', component: OrdenComponent, pathMatch: 'full'},
-      {path: 'formOrden', component: FormOrdenComponent, pathMatch: 'full'},
+      // {path: 'formOrden', component: FormOrdenComponent, pathMatch: 'full'},
+      {path: 'listadoOrden', component: ListadoOrdenComponent, pathMatch: 'full'},
       {path: 'usuarioListado', component: UsuarioListadoComponent, pathMatch: 'full'},
+      {path: 'usuarioRegistro', component: UsuarioRegistroComponent, pathMatch: 'full'},
+      {path: 'usuarioRegistro/:id', component: UsuarioRegistroComponent, pathMatch: 'full' },
       {path: '**', redirectTo: '', pathMatch: 'full'},
     ]
   }
