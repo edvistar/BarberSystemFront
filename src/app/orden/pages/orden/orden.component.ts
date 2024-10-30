@@ -12,6 +12,7 @@ import { OrdenService } from '../../services/orden.service';
 import { FormBuilder } from '@angular/forms';
 import { AgregarServicioDto } from '../../interfaces/agregarservicio';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { Cliente } from '../../interfaces/cliente';
 
 @Component({
   selector: 'app-orden',
@@ -38,18 +39,27 @@ export class OrdenComponent implements OnInit {
     };
   } = {};
 
-  chairServicesdos: {
-    [key: number]: {
+  // listadoClientes: {
+  //   [key: number]: {
 
-      ocuped: number; // Estado de ocupación de la silla
+  //     nombres:string,
+  //     apellidos: string,
+  //     selectedValue: string
 
-    };
-  } = {};
+  //   };
+  // } = {};
 
   ordenId: number | null = null;
   private hubConnection!: signalR.HubConnection;
   username: any;
   zone: any;
+
+  ListadoClientes: Cliente[] = [];
+  //selectedClienteId: { [key: number]: number } = {}; // Objeto para guardar el cliente seleccionado por índice
+  //selectedClienteId: number | null = null; // Agrega esta propiedad en tu clase
+  selectedClienteId: { [key: number]: number } = {}; // Inicializa como un objeto vacío
+
+
   constructor(
     private fb: FormBuilder,
     private _chairServicio: ChairService,
@@ -70,6 +80,7 @@ export class OrdenComponent implements OnInit {
       this.chairServices = {};
     }
     this.obtenerServicios();
+    this.obtenerClientes();
 
     this.loadChairServices();
 
@@ -408,6 +419,27 @@ export class OrdenComponent implements OnInit {
       },
     });
   }
+
+  obtenerClientes() {
+    this._usuarioService.listadoClientes().subscribe({
+      next: (data) => {
+        if (data.isExitoso) {
+          this.ListadoClientes = data.resultado;
+          console.log("Clientes obtenidos:", this.ListadoClientes); // Verifica los clientes asignados a la variable
+        } else {
+          this._compartidoService.mostrarAlerta(
+            'No se encontraron Clientes',
+            'Advertencia!'
+          );
+        }
+      },
+      error: (e) => {
+        this._compartidoService.mostrarAlerta(e.error.mensaje, 'Error!');
+        console.error('Error al obtener los Clientes', e);
+      },
+    });
+  }
+
 
   agregarServicio(numero: number) {
     const chairId = numero;
@@ -844,21 +876,129 @@ export class OrdenComponent implements OnInit {
     console.log('Sillas ocupadas validadas:', this.sillasOcupadas);
   }
 
-  enviarOrden(chair: number) {
+  // enviarOrden(chair: number) {
+  //   const userName = this._compartidoService.obtenerSesion();
+  //   this.username = userName;
+  //   console.error('Usuario logueado desde compartido:', this.username);
+  //   const chairService = this.chairServices[chair]; // Obtenemos el servicio de la silla correspondiente
+  //   console.log('Usuario logueado:', this.username);
+  //   // Asegúrate de que chairService y services estén definidos
+  //   if (chairService && chairService.services.length > 0) {
+  //     const orden: Orden = {
+  //       id: this.selectedChairId, // ID opcional para nuevas órdenes
+  //       numero: chair, // ID de la silla como número
+  //       servicios: chairService.services.map((service) =>
+  //         service.id.toString()
+  //       ), // Convertir IDs a string
+  //       nombreCliente: this.username, // Nombre del cliente
+  //       usuarioAtiende: this.username, // Usuario que atiende
+  //     };
+
+  //     const chairObj = this.chairs.find((c) => c.id === chair);
+  //     // Paso 2: Verificar que se encontró la silla
+  //     if (!chairObj) {
+  //       console.error('Silla no encontrada');
+  //       return; // Salir si no se encontró la silla
+  //     }
+  //     console.log('encontre la silla', chairObj);
+  //     this._ordenService.crear(orden).subscribe({
+  //       next: (response) => {
+  //         if (response.isExitoso) {
+  //           Swal.fire('Éxito', 'Orden enviada correctamente', 'success');
+
+  //           // Llamar a eliminarServiciosLiberarSilla para limpiar servicios y liberar la silla
+  //           this.eliminarServiciosSilla(chairObj.id);
+  //           if (chairObj) {
+  //             console.log('ingreso', chairObj);
+  //             // Cambiar el estado de la silla a no ocupada (disponible)
+  //             chairObj.ocuped = 0; // Cambiar el estado del objeto chair que se pasará al backend
+  //             this._chairServicio.editarEstado(chairObj).subscribe({
+  //               next: (response) => {
+  //                 console.log('Response:', response); // Para depuración
+  //                 if (response.isExitoso) {
+  //                   console.log(
+  //                     `Silla ${chairObj.id} liberada exitosamente en el backend.`
+  //                   );
+
+  //                   // Actualizar el estado local
+  //                   //this.chairServices[chair.id].ocuped = 0;
+  //                   let ocupedBool: boolean = chairObj.ocuped === 0;
+
+  //                   // Enviar la actualización de estado mediante SignalR
+  //                   this.hubConnection
+  //                     .invoke(
+  //                       'UpdateChairStatus',
+  //                       chairObj.id,
+  //                       ocupedBool,
+  //                       chairService.services
+  //                     )
+  //                     .then(() => {
+  //                       chairObj.ocuped = 0;
+  //                       console.log(
+  //                         `Silla con ID ${chairObj.id} liberada y actualización enviada por SignalR.`
+  //                       );
+  //                     })
+  //                     .catch((err) => {
+  //                       console.error(
+  //                         'Error al enviar la actualización de la silla por SignalR',
+  //                         err
+  //                       );
+  //                     });
+  //                 } else {
+  //                   console.error(
+  //                     `Error al liberar la silla ${chairObj.id}:`,
+  //                     response.mensaje
+  //                   );
+  //                 }
+  //               },
+  //               error: (error) => {
+  //                 console.error('Error al liberar la silla:', error);
+  //               },
+  //               complete: () => {
+  //                 console.log('Liberación de silla completada.');
+  //               },
+  //             });
+  //           } else {
+  //             console.error('Silla no encontrada');
+  //           }
+  //         } else {
+  //           Swal.fire('Error', 'No se pudo enviar la orden', 'error');
+  //         }
+  //       },
+  //       error: (error) => {
+  //         console.error('Error al enviar la orden', error);
+  //         Swal.fire('Error', 'Error en el servidor', 'error');
+  //       },
+  //     });
+  //   } else {
+  //     console.error('Silla no válida o sin servicios asociados.');
+  //     Swal.fire(
+  //       'Advertencia',
+  //       'Debe seleccionar al menos un servicio para la silla.',
+  //       'warning'
+  //     );
+  //   }
+  // }
+  // Supongamos que tienes una propiedad para almacenar el ID del cliente seleccionado
+
+
+enviarOrden(chair: number) {
     const userName = this._compartidoService.obtenerSesion();
     this.username = userName;
     console.error('Usuario logueado desde compartido:', this.username);
     const chairService = this.chairServices[chair]; // Obtenemos el servicio de la silla correspondiente
     console.log('Usuario logueado:', this.username);
+
     // Asegúrate de que chairService y services estén definidos
-    if (chairService && chairService.services.length > 0) {
+    if (chairService && chairService.services.length > 0 && this.selectedClienteId) {
       const orden: Orden = {
         id: this.selectedChairId, // ID opcional para nuevas órdenes
         numero: chair, // ID de la silla como número
         servicios: chairService.services.map((service) =>
           service.id.toString()
         ), // Convertir IDs a string
-        nombreCliente: this.username, // Nombre del cliente
+        nombreCliente: this.ListadoClientes.find(cliente => cliente.id === this.selectedClienteId[chair])?.nombres || 'Cliente no encontrado',
+
         usuarioAtiende: this.username, // Usuario que atiende
       };
 
@@ -869,6 +1009,7 @@ export class OrdenComponent implements OnInit {
         return; // Salir si no se encontró la silla
       }
       console.log('encontre la silla', chairObj);
+
       this._ordenService.crear(orden).subscribe({
         next: (response) => {
           if (response.isExitoso) {
@@ -888,16 +1029,12 @@ export class OrdenComponent implements OnInit {
                       `Silla ${chairObj.id} liberada exitosamente en el backend.`
                     );
 
-                    // Actualizar el estado local
-                    //this.chairServices[chair.id].ocuped = 0;
-                    let ocupedBool: boolean = chairObj.ocuped === 0;
-
                     // Enviar la actualización de estado mediante SignalR
                     this.hubConnection
                       .invoke(
                         'UpdateChairStatus',
                         chairObj.id,
-                        ocupedBool,
+                        true, // Silla liberada
                         chairService.services
                       )
                       .then(() => {
@@ -939,12 +1076,13 @@ export class OrdenComponent implements OnInit {
         },
       });
     } else {
-      console.error('Silla no válida o sin servicios asociados.');
+      console.error('Silla no válida o sin servicios asociados o cliente no seleccionado.');
       Swal.fire(
         'Advertencia',
-        'Debe seleccionar al menos un servicio para la silla.',
+        'Debe seleccionar al menos un servicio y un cliente para la silla.',
         'warning'
       );
     }
   }
+
 }

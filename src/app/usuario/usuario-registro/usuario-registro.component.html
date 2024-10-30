@@ -1,1 +1,69 @@
-<p>usuario-registro works!</p>
+<div class="container">
+  <form [formGroup]="formUsuario">
+    <mat-card>
+      <h1 class="m-3 text-center"><span>Crear un nuevo Usuario</span></h1>
+      <mat-card-content>
+        <mat-form-field class="mat-30" appearance="fill">
+          <mat-label>Apellidos</mat-label>
+          <input matInput formControlName="apellidos" placeholder="Ingrese apellidos">
+        </mat-form-field>
+        <mat-form-field class="mat-30" appearance="fill">
+          <mat-label>nombres</mat-label>
+          <input matInput formControlName="nombres" placeholder="Ingrese nombres">
+        </mat-form-field>
+        <mat-form-field class="mat-30" appearance="fill">
+          <mat-label>Documento</mat-label>
+          <input matInput formControlName="documento" placeholder="Ingrese Documento">
+        </mat-form-field>
+        <mat-form-field class="mat-30" appearance="fill">
+          <mat-label>Nombre de Usuario</mat-label>
+          <input matInput formControlName="userName" autocomplete="off" placeholder="Ingrese El nombre de Usuario">
+        </mat-form-field>
+        <mat-form-field class="mat-30" appearance="fill">
+          <mat-label>Dirección</mat-label>
+          <input matInput formControlName="address" placeholder="Ingrese Dirección">
+        </mat-form-field>
+        <mat-form-field class="mat-30" appearance="fill">
+          <mat-label>Telefono</mat-label>
+          <input matInput formControlName="phoneNumber" placeholder="Ingrese numero de telefono">
+        </mat-form-field>
+        <mat-form-field class="mat-30" appearance="fill">
+          <mat-label>Email</mat-label>
+          <input matInput autocomplete="off" formControlName="email" type="email" placeholder="Ingrese El correo Usuario"
+          pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$">
+          <div *ngIf="email?.touched">
+            <p *ngIf="email?.errors?.['pattern']">Email No Valido</p>
+          </div>
+        </mat-form-field>
+
+        <mat-form-field class="mat-30" appearance="fill">
+          <mat-label>Rol</mat-label>
+          <mat-select formControlName="rol">
+            <mat-option *ngFor="let item of listaRoles" [value]="item.nombreRol">
+              {{item.nombreRol}}
+            </mat-option>
+          </mat-select>
+
+        </mat-form-field>
+
+        <mat-form-field class="mat-30" appearance="fill" *ngIf="!usuarioId">
+          <mat-label>Contraseña</mat-label>
+          <input matInput formControlName="password" autocomplete="new-password" placeholder="Ingrese password" autocomplete="off"
+          type="password">
+        </mat-form-field>
+
+        <mat-dialog-actions align="end">
+           <!-- Botón de regresar -->
+    <button mat-raised-button color="warn" (click)="volver()">
+      Volver
+    </button>
+          <!-- <button mat-raised-button mat-dialog-close="true" color="warn">Volver</button> -->
+          <button mat-raised-button color="primary" [disabled]="formUsuario.invalid"
+            (click)="CrearModificarUsuario()"
+          >{{nombreBoton}}</button>
+        </mat-dialog-actions>
+      </mat-card-content>
+
+    </mat-card>
+  </form>
+</div>

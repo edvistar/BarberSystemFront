@@ -17,6 +17,7 @@ import { SweetAlert2Module } from '@sweetalert2/ngx-sweetalert2';
 import { ModalServicioComponent } from './servicios/pages/modal/modal-servicio.component';
 import { FormOrdenComponent } from './orden/pages/form-orden/form-orden.component';
 import { AuthInterceptor } from './interceptors/auth.interceptor';
+import { ListadoOrdenComponent } from './orden/pages/listado-orden/listado-orden.component';
 
 
 @NgModule({
@@ -28,7 +29,8 @@ import { AuthInterceptor } from './interceptors/auth.interceptor';
     OrdenComponent,
     ModalChairComponent,
     ModalServicioComponent,
-    FormOrdenComponent
+    FormOrdenComponent,
+    ListadoOrdenComponent
   ],
   imports: [
     BrowserModule,

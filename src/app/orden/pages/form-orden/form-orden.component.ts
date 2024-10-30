@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { UsuarioService } from '../../../usuario/services/usuario.service'; // Asegúrate de que la ruta sea correcta
 import { OrdenService } from '../../services/orden.service'; // Servicio para manejar órdenes
@@ -6,13 +6,15 @@ import { Login } from 'src/app/usuario/interfaces/login';
 import { CompartidoService } from 'src/app/compartido/compartido.service';
 import { Servicios } from '../../../servicios/interfaces/servicios';
 import { Orden } from '../../interfaces/orden';
+import { Cliente } from '../../interfaces/cliente';
+import { ServiciosService } from 'src/app/servicios/services/servicios.service';
 
 @Component({
   selector: 'app-form-orden',
   templateUrl: './form-orden.component.html',
   styleUrls: ['./form-orden.component.css']
 })
-export class FormOrdenComponent {
+export class FormOrdenComponent implements OnInit{
   @Input() silla: any; // Recibe la silla desde el componente padre
   @Output() ordenEnviada = new EventEmitter<any>(); // Emitir evento hacia el padre
 
@@ -26,12 +28,17 @@ export class FormOrdenComponent {
     nombreCliente: '',
     usuarioAtiende: ''
   };
+  selectedClienteId: { [key: number]: number } = {}; // Inicializa como un objeto vacío
+  ListadoClientes: Cliente[] = [];
+  numero: number | null = null; // Número de la silla seleccionada
+  servicios: Servicios[] = [];
 
   constructor(
     private fb: FormBuilder,
     private _compartidoService: CompartidoService,
     private _usuarioService: UsuarioService,
     private _ordenService: OrdenService,
+    private _servicioServicio: ServiciosService
 
   ) {
     this.formOrden = this.fb.group({
@@ -39,6 +46,48 @@ export class FormOrdenComponent {
       servicios: [[], Validators.required], // Cambia esto si se trata de un string
       nombreCliente: ['', Validators.required],
       usuarioAtiende: ['', Validators.required]
+    });
+  }
+  ngOnInit(): void {
+    this.obtenerClientes();
+    this.obtenerServicios();
+  }
+  obtenerServicios() {
+    this._servicioServicio.lista().subscribe({
+      next: (data) => {
+        if (data.isExitoso) {
+          this.servicios = data.resultado;
+        } else {
+          this._compartidoService.mostrarAlerta(
+            'No se encontraron servicios',
+            'Advertencia!'
+          );
+        }
+      },
+      error: (e) => {
+        this._compartidoService.mostrarAlerta(e.error.mensaje, 'Error!');
+        console.error('Error al obtener los servicios', e);
+      },
+    });
+  }
+
+  obtenerClientes() {
+    this._usuarioService.listadoClientes().subscribe({
+      next: (data) => {
+        if (data.isExitoso) {
+          this.ListadoClientes = data.resultado;
+          console.log("Clientes obtenidos:", this.ListadoClientes); // Verifica los clientes asignados a la variable
+        } else {
+          this._compartidoService.mostrarAlerta(
+            'No se encontraron Clientes',
+            'Advertencia!'
+          );
+        }
+      },
+      error: (e) => {
+        this._compartidoService.mostrarAlerta(e.error.mensaje, 'Error!');
+        console.error('Error al obtener los Clientes', e);
+      },
     });
   }
   enviarOrdenForm() {

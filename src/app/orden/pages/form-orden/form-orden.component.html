@@ -7,14 +7,22 @@
         <input matInput formControlName="numero" placeholder="Ingrese el Número de la Silla">
       </mat-form-field>
 
-      <mat-form-field class="mat-30" appearance="fill">
-        <mat-label>Nombre del Cliente</mat-label>
-        <input matInput formControlName="nombreCliente" placeholder="Ingrese el Nombre del Cliente">
+      <mat-form-field appearance="fill" style="width: 300px; display: block; margin-top: 10px;">
+        <mat-label>Selecciona un cliente</mat-label>
+        <mat-select>
+          <mat-option *ngFor="let cliente of ListadoClientes" [value]="cliente.id">
+            {{ cliente.nombres }} {{ cliente.apellidos }}
+          </mat-option>
+        </mat-select>
       </mat-form-field>
 
-      <mat-form-field class="mat-30" appearance="fill">
-        <mat-label>Servicios</mat-label>
-        <input matInput formControlName="servicios" placeholder="Ingrese el Servicio" />
+      <mat-form-field appearance="fill" style="width: 300px; display: block; margin-top: 10px;">
+        <mat-label>Selecciona un Servicio</mat-label>
+        <mat-select>
+          <mat-option *ngFor="let servicio of servicios" [value]="servicio.id">
+            {{ servicio.name }}
+          </mat-option>
+        </mat-select>
       </mat-form-field>
       <mat-form-field class="mat-30" appearance="fill">
         <mat-label>Usuario Que Atiende</mat-label>
