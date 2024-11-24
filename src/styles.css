@@ -39,4 +39,11 @@ footer {
   width: 100%;
   z-index: 10; /* Opcional, para asegurarte de que no quede oculto */
 }
+.mt-custom {
+  margin-top: 5rem;
+}
+.mb-custom{
+  margin-bottom: 7rem;
+}
+
 

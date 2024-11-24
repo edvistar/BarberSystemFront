@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ProductService } from 'src/app/Producto/services/product.service';
 import { CompartidoService } from '../../compartido.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-home',
@@ -10,7 +11,8 @@ import { CompartidoService } from '../../compartido.service';
 export class HomeComponent implements OnInit {
   products: any[] = [];
   constructor(private _productService: ProductService,
-    private _compartidoService: CompartidoService
+    private _compartidoService: CompartidoService,
+    private router: Router
   ){
 
   }
@@ -42,6 +44,11 @@ export class HomeComponent implements OnInit {
     // Busca la imagen principal o devuelve la primera
     const principal = images.find(image => image.esPrincipal);
     return principal ? principal.imageUrl : images[0]?.imageUrl || 'assets/no-image.png';
+  }
+
+  ProductDetalle(productId: number){
+    console.log('ID del producto seleccionado:', productId);
+  this.router.navigate(['productDetalle', productId]);
   }
 }
 

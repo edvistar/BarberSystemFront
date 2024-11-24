@@ -4,11 +4,17 @@ import { LoginComponent } from './usuario/login/login.component';
 import { LayoutComponent } from './compartido/layout/layout.component';
 import { HomeComponent } from './compartido/pages/home/home.component';
 import { UsuarioRegistroComponent } from './usuario/usuario-registro/usuario-registro.component';
+import { ProductDetalleComponent } from './Producto/pages/product-detalle/product-detalle.component';
 
 const routes: Routes = [
   {
     path: '',
    component: HomeComponent,
+    pathMatch: 'full'
+  },
+  {
+    path: 'productDetalle/:id',
+   component: ProductDetalleComponent,
     pathMatch: 'full'
   },
   {
