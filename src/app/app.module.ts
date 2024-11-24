@@ -20,6 +20,7 @@ import { AuthInterceptor } from './interceptors/auth.interceptor';
 import { ListadoOrdenComponent } from './orden/pages/listado-orden/listado-orden.component';
 import { ProductComponent } from './Producto/pages/product/product.component';
 import { ListProductComponent } from './Producto/pages/list-product/list-product.component';
+import { ProductDetalleComponent } from './Producto/pages/product-detalle/product-detalle.component';
 
 
 @NgModule({
@@ -34,7 +35,8 @@ import { ListProductComponent } from './Producto/pages/list-product/list-product
     FormOrdenComponent,
     ListadoOrdenComponent,
     ProductComponent,
-    ListProductComponent
+    ListProductComponent,
+    ProductDetalleComponent
   ],
   imports: [
     BrowserModule,

@@ -1,4 +1,4 @@
-export interface Product{
+export interface Product {
   id: number;
   name: string;
   serialNumber: string;
@@ -7,8 +7,15 @@ export interface Product{
   offer: boolean;
   price: number;
   cost: number;
-  imageUrl: string;
-  localImageUrl: string;
-  categoriaId: number;
-  marcaId: number;
+  categoriaId: number;  // Aquí solo dejamos el id de la categoría
+  marcaId: number;  // Aquí solo dejamos el id de la marca
+  imagenes: {
+    id: number;
+    productId: number;
+    imageUrl: string;
+    localImageUrl: string;
+    description: string;
+    esPrincipal: boolean;
+  }[];
 }
+

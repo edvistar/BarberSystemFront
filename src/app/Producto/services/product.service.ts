@@ -15,4 +15,7 @@ export class ProductService {
   lista() : Observable<ApiResponse>{
     return this.http.get<ApiResponse>(`${this.baseUrl}`)
   }
+  getProductById(id: number): Observable<ApiResponse>{
+    return this.http.get<ApiResponse>(`${this.baseUrl}${id}`);
+    }
 }

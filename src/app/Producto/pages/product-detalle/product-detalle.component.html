@@ -1,0 +1,52 @@
+<div class="container">
+
+
+  <div *ngIf="product" class="mt-custom">
+
+    <mat-card class="product-card mb-5 pt-5">
+      <h1 class="text-center">Detalle del Producto</h1>
+      <!-- Contenedor para la imagen principal y los detalles -->
+      <div class="product-details-container">
+        <!-- Galería de miniaturas a la izquierda -->
+        <div class="thumbnail-column">
+          <h3>Más imágenes</h3>
+          <div class="thumbnail-container mb-5">
+            <div *ngFor="let imagen of product.imagenes"
+                 (click)="changeImage(imagen)"
+                 [ngClass]="{'selected': currentImage?.id === imagen.id}"
+                 class="thumbnail">
+              <img [src]="imagen.imageUrl" [alt]="product.name" class="thumbnail-image" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Imagen principal en el centro -->
+        <div class="main-image">
+          <img class="product-image" mat-card-image [src]="currentImage?.imageUrl || product.imagenes[0]?.imageUrl" alt="{{ product.name }}" />
+        </div>
+
+        <!-- Detalles del producto a la derecha -->
+        <div class="product-info">
+          <h2>{{ product.name }}</h2>
+          <h3>{{ product.marca.name }}</h3>
+          <p>{{ product.description || 'Sin descripción disponible' }}</p>
+          <p><strong>Precio:</strong> ${{ product.price }}</p>
+          <p><strong>Categoría:</strong> {{ product.categoria?.name || 'Sin categoría' }}</p>
+
+          <div class="product-actions">
+            <button mat-raised-button color="success" (click)="BackHome()">
+              Seguir Comprando
+            </button>
+            <button mat-raised-button color="primary">Comprar</button>
+            <button mat-raised-button color="accent">Agregar al carrito</button>
+          </div>
+        </div>
+      </div>
+    </mat-card>
+  </div>
+
+  <div *ngIf="!product">
+    <mat-spinner></mat-spinner>
+    <p>Cargando producto...</p>
+  </div>
+</div>
