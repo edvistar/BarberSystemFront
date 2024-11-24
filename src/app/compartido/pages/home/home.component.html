@@ -1,0 +1,29 @@
+<app-navbar/>
+
+<div class="container text-center mt-custom mb-custom"> <h1>Productos disponibles</h1>
+  <div class="product-container">
+    <mat-card
+      class="example-card"
+      appearance="outlined"
+      *ngFor="let product of products"
+    >
+      <mat-card-header>
+        <div mat-card-avatar class="example-header-image"></div>
+        <mat-card-title>{{ product.name }}</mat-card-title>
+        <mat-card-subtitle>{{ product.marca.name }}</mat-card-subtitle>
+      </mat-card-header>
+      <img mat-card-image [src]="getPrincipalImage(product.imagenes)" alt="{{ product.name }}">
+      <mat-card-content>
+        <p>
+          {{ product.description || 'Sin descripción adicional disponible.' }}
+        </p>
+      </mat-card-content>
+      <mat-card-actions>
+        <button mat-button>Detalle</button>
+      </mat-card-actions>
+    </mat-card>
+  </div>
+</div>
+
+<app-footer/>
+

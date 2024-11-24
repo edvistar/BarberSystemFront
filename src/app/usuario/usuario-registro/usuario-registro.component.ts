@@ -46,7 +46,7 @@ export class UsuarioRegistroComponent implements OnInit {
         ]
       ],
       rol: ['', Validators.required],
-      //password: ['', Validators.required],
+      password: ['', Validators.required],
       //password: ['', this.usuarioId ? null : Validators.required],
 
     });
@@ -83,14 +83,15 @@ volver(): void {
           const usuario = data.resultado.find((u: Usuario) => u.id === id);
           if (usuario) {
             this.formUsuario.patchValue({
-              apellidos: usuario.apellidos,
+            apellidos: usuario.apellidos,
             nombres: usuario.nombres,
             documento: usuario.documento,
             userName: usuario.userName,
             address: usuario.address,
             phoneNumber: usuario.phoneNumber,
             email: usuario.email,
-            rol: usuario.rol
+            rol: usuario.rol,
+            password: usuario.password
             });
             this.titulo = 'Editar Usuario';
             this.nombreBoton = 'Actualizar';
