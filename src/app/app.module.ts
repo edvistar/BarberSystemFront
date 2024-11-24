@@ -18,6 +18,8 @@ import { ModalServicioComponent } from './servicios/pages/modal/modal-servicio.c
 import { FormOrdenComponent } from './orden/pages/form-orden/form-orden.component';
 import { AuthInterceptor } from './interceptors/auth.interceptor';
 import { ListadoOrdenComponent } from './orden/pages/listado-orden/listado-orden.component';
+import { ProductComponent } from './Producto/pages/product/product.component';
+import { ListProductComponent } from './Producto/pages/list-product/list-product.component';
 
 
 @NgModule({
@@ -30,7 +32,9 @@ import { ListadoOrdenComponent } from './orden/pages/listado-orden/listado-orden
     ModalChairComponent,
     ModalServicioComponent,
     FormOrdenComponent,
-    ListadoOrdenComponent
+    ListadoOrdenComponent,
+    ProductComponent,
+    ListProductComponent
   ],
   imports: [
     BrowserModule,

@@ -1,0 +1,27 @@
+body{
+margin: 0;
+display:grid;
+min-height: 100vh;
+grid-template-rows: auto 1fr auto;
+}
+.auth-buttons {
+  display: flex;
+  gap: 10px; /* Espacio entre los botones de Login y Registro */
+}
+.example-card {
+  max-width: 240px;
+  max-height: 480px;
+}
+
+.product-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.mt-custom {
+  margin-top: 5rem;
+}
+.mb-custom{
+  margin-bottom: 7rem;
+}

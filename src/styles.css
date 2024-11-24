@@ -1,10 +1,42 @@
 /* You can add global styles to this file, and also import other style files */
 
-html, body { height: 100%; }
+html, body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  margin: 0;
+}
+
 body {
   margin: 0;
   font-family: Roboto, "Helvetica Neue", sans-serif;
   background: rgb(8,9,249);
-  background: linear-gradient(129deg, rgba(8,9,249,1) 0%, rgba(251,242,242,0.4962359943977591) 42%, rgba(247,3,3,0.5494572829131652) 100%)
+  background: linear-gradient(129deg, rgba(8,9,249,1) 0%, rgba(251,242,242,0.4962359943977591) 42%, rgba(247,3,3,0.5494572829131652) 100%);
 
+  min-height: 100vh; /* Asegura que ocupe toda la altura de la ventana */
+  grid-template-rows: auto 1fr auto; /* Header, contenido principal y footer */
  }
+mat-toolbar {
+  background: rgb(172, 138, 74);
+  display: flex;
+  justify-content: space-between;  /* Esto asegura que los dos contenedores estén separados */
+  align-items: center;             /* Centra los elementos verticalmente */
+
+}
+
+.left-container {
+  display: flex;
+  align-items: center;  /* Alinea el título y el botón de "Inicio" verticalmente */
+}
+footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  background: rgb(74, 74, 172);
+  color: white;
+  text-align: center;
+  padding: 10px 0;
+  width: 100%;
+  z-index: 10; /* Opcional, para asegurarte de que no quede oculto */
+}
+
