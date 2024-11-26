@@ -12,6 +12,8 @@ import { authGuard } from '../_guards/auth.guard';
 import { UsuarioListadoComponent } from '../usuario/usuario-listado/usuario-listado.component';
 import { UsuarioRegistroComponent } from '../usuario/usuario-registro/usuario-registro.component';
 import { ListadoOrdenComponent } from '../orden/pages/listado-orden/listado-orden.component';
+import { ProductComponent } from '../Producto/pages/product/product.component';
+import { ListProductComponent } from '../Producto/pages/list-product/list-product.component';
 
 
 const routes: Routes = [
@@ -22,6 +24,8 @@ const routes: Routes = [
     children:[
       {path: 'dashboard', component: DashboardComponent, pathMatch: 'full'},
       {path: 'chair', component: ChairComponent, pathMatch: 'full'},
+      {path: 'ListProduct', component: ListProductComponent, pathMatch: 'full'},
+      {path: 'product', component: ProductComponent, pathMatch: 'full'},
       {path: 'servicios', component: ServiciosComponent, pathMatch: 'full'},
       {path: 'orden', component: OrdenComponent, pathMatch: 'full'},
       // {path: 'formOrden', component: FormOrdenComponent, pathMatch: 'full'},

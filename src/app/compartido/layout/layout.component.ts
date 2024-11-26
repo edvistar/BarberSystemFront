@@ -26,6 +26,6 @@ export class LayoutComponent implements OnInit {
 
       this.cookieService.delete('Authorization', '/');
 
-      this.router.navigate(['login']);
+      this.router.navigate(['home']);
   }
 }
