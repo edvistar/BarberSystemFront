@@ -21,6 +21,8 @@ import { ListadoOrdenComponent } from './orden/pages/listado-orden/listado-orden
 import { ProductComponent } from './Producto/pages/product/product.component';
 import { ListProductComponent } from './Producto/pages/list-product/list-product.component';
 import { ProductDetalleComponent } from './Producto/pages/product-detalle/product-detalle.component';
+import { CategoryComponent } from './Categoria/category/category.component';
+import { MarcaComponent } from './Marcas/marca/marca.component';
 
 
 @NgModule({
@@ -36,7 +38,9 @@ import { ProductDetalleComponent } from './Producto/pages/product-detalle/produc
     ListadoOrdenComponent,
     ProductComponent,
     ListProductComponent,
-    ProductDetalleComponent
+    ProductDetalleComponent,
+    CategoryComponent,
+    MarcaComponent
   ],
   imports: [
     BrowserModule,

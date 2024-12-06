@@ -14,6 +14,8 @@ import { UsuarioRegistroComponent } from '../usuario/usuario-registro/usuario-re
 import { ListadoOrdenComponent } from '../orden/pages/listado-orden/listado-orden.component';
 import { ProductComponent } from '../Producto/pages/product/product.component';
 import { ListProductComponent } from '../Producto/pages/list-product/list-product.component';
+import { MarcaComponent } from '../Marcas/marca/marca.component';
+import { CategoryComponent } from '../Categoria/category/category.component';
 
 
 const routes: Routes = [
@@ -27,6 +29,8 @@ const routes: Routes = [
       {path: 'ListProduct', component: ListProductComponent, pathMatch: 'full'},
       {path: 'product', component: ProductComponent, pathMatch: 'full'},
       {path: 'servicios', component: ServiciosComponent, pathMatch: 'full'},
+      {path: 'marca', component: MarcaComponent, pathMatch: 'full'},
+      {path: 'category', component: CategoryComponent, pathMatch: 'full'},
       {path: 'orden', component: OrdenComponent, pathMatch: 'full'},
       // {path: 'formOrden', component: FormOrdenComponent, pathMatch: 'full'},
       {path: 'listadoOrden', component: ListadoOrdenComponent, pathMatch: 'full'},

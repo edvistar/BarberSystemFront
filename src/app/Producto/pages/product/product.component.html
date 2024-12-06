@@ -30,7 +30,7 @@
         <mat-label>Costo de Producto</mat-label>
         <input matInput formControlName="cost" placeholder="Ingrese el Número de la Silla">
       </mat-form-field>
-      
+
       <mat-form-field appearance="fill" style="width: 300px; display: block; margin-top: 10px;">
         <mat-label>Selecciona una Categoria</mat-label>
         <mat-select>
@@ -42,19 +42,33 @@
 
       <mat-form-field appearance="fill" style="width: 300px; display: block; margin-top: 10px;">
         <mat-label>Selecciona una Marca</mat-label>
-        <mat-select>
-          <!-- <mat-option *ngFor="let servicio of servicios" [value]="servicio.id">
+        <!-- <mat-select>
+          <mat-option *ngFor="let servicio of servicios" [value]="servicio.id">
             {{ servicio.name }}
-          </mat-option> -->
-        </mat-select>
+          </mat-option>
+        </mat-select> -->
       </mat-form-field>
-      <mat-form-field class="mat-30" appearance="fill">
-        <mat-label>Usuario Que Atiende</mat-label>
-        <input matInput formControlName="usuarioAtiende" placeholder="Ingrese usuario" />
-      </mat-form-field>
+      <div>
+        <!-- Botón estilizado -->
+        <button mat-raised-button color="primary" (click)="fileInput.click()">Seleccionar imágenes</button>
 
+        <!-- Input de tipo file oculto -->
+        <input
+          #fileInput
+          type="file"
+          multiple
+          (change)="onFileSelected($event)"
+          style="display: none;" />
+      </div>
 
-      <button mat-raised-button color="primary">Crear Producto</button>
+      <!-- Lista de archivos seleccionados -->
+      <div *ngIf="selectedFiles.length > 0">
+        <h3>Imágenes seleccionadas:</h3>
+        <ul>
+          <li *ngFor="let file of selectedFiles">{{ file.name }}</li>
+        </ul>
+      </div>
+      <button mat-raised-button color="primary" (click)="CrearModificarProduct()">Crear Producto</button>
     </mat-card-content>
   </mat-card>
 </form>

@@ -12,12 +12,15 @@ import { ActivatedRoute, Router } from '@angular/router';
 })
 export class ProductComponent implements OnInit {
 productId:number | null = null;
+selectedFiles: File[] = []; // Array para almacenar los archivos seleccionados
+images: string[] = []; // Lista de rutas de imágenes seleccionadas para previsualización
 
 @Input() datosProduct: Product | null = null;
   formProduct: FormGroup;
   titulo: string = "Agregar";
   nombreBoton: string = "Guardar";
   errorMessage: string | undefined;
+  previewUrls: any;
 
   constructor(private fb: FormBuilder,
     private _compartidoService: CompartidoService,
@@ -87,5 +90,22 @@ productId:number | null = null;
   ngOnInit(): void {
     throw new Error('Method not implemented.');
   }
+  onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
 
+    if (input.files) {
+      this.images = []; // Limpiar las miniaturas previas
+
+      Array.from(input.files).forEach((file) => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const result = e.target?.result;
+          if (result) {
+            this.images.push(result as string); // Agregar la URL generada para previsualizar
+          }
+        };
+        reader.readAsDataURL(file); // Leer como URL de datos
+      });
+    }
+  }
 }

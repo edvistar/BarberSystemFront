@@ -28,7 +28,6 @@ export class ServiciosComponent {
 
   constructor(
     private _serviceServicio: ServiciosService,
-    private _servicioServicio: ServiciosService,
     private _compartidoService: CompartidoService,
     private dialog: MatDialog ) {}
 
