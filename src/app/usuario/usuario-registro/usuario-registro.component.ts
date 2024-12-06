@@ -160,4 +160,7 @@ volver(): void {
   get email(){
     return this.formUsuario.get('email');
   }
+  BackHome(): void {
+    this.router.navigate(['/home']); // Cambia '/home' a la ruta correspondiente a la vista principal.
+  }
 }

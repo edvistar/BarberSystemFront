@@ -1,1 +1,73 @@
-<p>product works!</p>
+<form [formGroup]="formProduct">
+  <mat-card>
+    <h1 class="m-3 text-center"><span>Crear una nueva orden</span></h1>
+    <mat-card-content>
+      <mat-form-field class="mat-30" appearance="fill">
+        <mat-label>Nombre de Producto</mat-label>
+        <input matInput formControlName="name" placeholder="Ingrese el Número de la Silla">
+      </mat-form-field>
+      <mat-form-field class="mat-30" appearance="fill">
+        <mat-label>Serial del Producto</mat-label>
+        <input matInput formControlName="serialNumber" placeholder="Ingrese el Número de la Silla">
+      </mat-form-field>
+      <mat-form-field class="mat-30" appearance="fill">
+        <mat-label>Descripción del Producto</mat-label>
+        <input matInput formControlName="description" placeholder="Ingrese el Número de la Silla">
+      </mat-form-field>
+      <mat-form-field class="mat-30" appearance="fill">
+        <mat-label>Estado de Producto</mat-label>
+        <input matInput formControlName="status" placeholder="Ingrese el Número de la Silla">
+      </mat-form-field>
+      <mat-form-field class="mat-30" appearance="fill">
+        <mat-label>Producto en Oferta</mat-label>
+        <input matInput formControlName="offer" placeholder="Ingrese el Número de la Silla">
+      </mat-form-field>
+      <mat-form-field class="mat-30" appearance="fill">
+        <mat-label>Precio de Producto</mat-label>
+        <input matInput formControlName="price" placeholder="Ingrese el Número de la Silla">
+      </mat-form-field>
+      <mat-form-field class="mat-30" appearance="fill">
+        <mat-label>Costo de Producto</mat-label>
+        <input matInput formControlName="cost" placeholder="Ingrese el Número de la Silla">
+      </mat-form-field>
+      
+      <mat-form-field appearance="fill" style="width: 300px; display: block; margin-top: 10px;">
+        <mat-label>Selecciona una Categoria</mat-label>
+        <mat-select>
+          <!-- <mat-option *ngFor="let cliente of ListadoClientes" [value]="cliente.id">
+            {{ cliente.nombres }} {{ cliente.apellidos }}
+          </mat-option> -->
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="fill" style="width: 300px; display: block; margin-top: 10px;">
+        <mat-label>Selecciona una Marca</mat-label>
+        <mat-select>
+          <!-- <mat-option *ngFor="let servicio of servicios" [value]="servicio.id">
+            {{ servicio.name }}
+          </mat-option> -->
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field class="mat-30" appearance="fill">
+        <mat-label>Usuario Que Atiende</mat-label>
+        <input matInput formControlName="usuarioAtiende" placeholder="Ingrese usuario" />
+      </mat-form-field>
+
+
+      <button mat-raised-button color="primary">Crear Producto</button>
+    </mat-card-content>
+  </mat-card>
+</form>
+
+
+
+
+
+
+
+
+
+
+
+
+

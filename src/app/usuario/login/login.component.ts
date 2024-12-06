@@ -60,4 +60,7 @@ export class LoginComponent {
       }
     });
   }
+  BackHome(): void {
+    this.router.navigate(['/home']); // Cambia '/home' a la ruta correspondiente a la vista principal.
+  }
 }
