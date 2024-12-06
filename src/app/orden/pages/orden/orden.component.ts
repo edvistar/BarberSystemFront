@@ -126,8 +126,8 @@ export class OrdenComponent implements OnInit {
   }
 
   iniciarSignalRConnection() {
-    //const hubUrl = 'https://barberapi.softallweb.co/ordenHub'; // Asegúrate de que esta URL es correcta
-    const hubUrl = 'http://localhost:26900/api/ordenHub'; // Asegúrate de que esta URL es correcta
+    const hubUrl = 'https://barberapi.softallweb.co/ordenHub'; // Asegúrate de que esta URL es correcta
+    // const hubUrl = 'http://localhost:26900/api/ordenHub'; // Asegúrate de que esta URL es correcta
 
     this.hubConnection = new signalR.HubConnectionBuilder()
       .withUrl(hubUrl, { withCredentials: true })
